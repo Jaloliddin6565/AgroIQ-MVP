@@ -1,0 +1,93 @@
+{
+  "schema_version": "1.0",
+  "status": "PILOT",
+  "notice_uz": "Ekin me'yorlari pilot qiymatlar. Hududiy dala tajribalari asosida agronom tomonidan sozlanishi kerak.",
+  "calculation_note_uz": "Kerakli P2O5 = maqsadli hosil (t/ga) x 1 tonna hosil bilan olib chiqiladigan P2O5 (kg) x tuproqdagi fosfor holati koeffitsienti x pH tuzatish koeffitsienti.",
+  "global_ph_adjustment": [
+    {
+      "max_ph": 6.0,
+      "factor_low": 1.05,
+      "factor_high": 1.20,
+      "reason_uz": "Kislotali muhitda fosfor temir va alyuminiy birikmalari bilan bog'lanib qolishi mumkin."
+    },
+    {
+      "max_ph": 7.5,
+      "factor_low": 1.0,
+      "factor_high": 1.0,
+      "reason_uz": "pH fosfor o'zlashtirilishi uchun qulay oraliqda."
+    },
+    {
+      "max_ph": 8.2,
+      "factor_low": 1.05,
+      "factor_high": 1.15,
+      "reason_uz": "Ishqoriy muhitda fosforning kalsiy birikmalariga bog'lanish ehtimoli ortadi."
+    },
+    {
+      "max_ph": 14.0,
+      "factor_low": 1.10,
+      "factor_high": 1.25,
+      "reason_uz": "Kuchli ishqoriy va karbonatli tuproqda fosfor o'simlik uchun kam o'zlashadigan shaklga o'tishi mumkin."
+    }
+  ],
+  "status_multipliers": {
+    "very_low": { "low": 2.0, "high": 2.5 },
+    "low": { "low": 1.5, "high": 2.0 },
+    "medium": { "low": 1.0, "high": 1.4 },
+    "sufficient": { "low": 0.6, "high": 0.9 },
+    "high": { "low": 0.0, "high": 0.0 }
+  },
+  "crops": [
+    {
+      "key": "paxta",
+      "name_uz": "Paxta",
+      "name_en": "Cotton",
+      "yield_unit_uz": "t/ga (paxta xom ashyosi)",
+      "default_target_yield": 3.5,
+      "min_target_yield": 1.0,
+      "max_target_yield": 7.0,
+      "p2o5_removal_kg_per_ton": 18.0,
+      "min_p2o5_kg_ha": 0.0,
+      "max_p2o5_kg_ha": 200.0,
+      "default_product": "ammofos",
+      "application_stage_uz": "Asosiy me'yorning 70-80% shudgor oldidan (kuzgi asosiy ishlov), qolgan qismi ekish bilan birga qatorga.",
+      "application_method_uz": "Chuqur (18-22 sm) lokal joylashtirish; ekish davrida urug' qatoridan 4-5 sm yon va past tomonga.",
+      "agronomic_notes_uz": [
+        "Paxta fosforga shonalash va gullash davrida eng sezgir.",
+        "Karbonatli tuproqlarda fosforni yuzaga sochib emas, lokal (tasmali) berish samaraliroq."
+      ],
+      "ec_sensitivity_ds_m": 7.7,
+      "ec_note_uz": "Paxta sho'rga nisbatan chidamli ekin, ammo EC 7.7 dS/m dan yuqori bo'lganda hosildorlik pasayishi kutiladi."
+    },
+    {
+      "key": "bugdoy",
+      "name_uz": "Bug'doy",
+      "name_en": "Winter wheat",
+      "yield_unit_uz": "t/ga (don)",
+      "default_target_yield": 5.0,
+      "min_target_yield": 1.0,
+      "max_target_yield": 10.0,
+      "p2o5_removal_kg_per_ton": 11.0,
+      "min_p2o5_kg_ha": 0.0,
+      "max_p2o5_kg_ha": 160.0,
+      "default_product": "ammofos",
+      "application_stage_uz": "Me'yorning asosiy qismi ekishdan oldin shudgorga, 20-30% ekish bilan birga (starter) beriladi.",
+      "application_method_uz": "Shudgor ostiga aralashtirib berish; starter qismi seyalka orqali urug' bilan birga qatorga.",
+      "agronomic_notes_uz": [
+        "Bug'doy uchun fosfor ildiz tizimi va tuplanish sifatiga kuchli ta'sir qiladi.",
+        "Starter fosfor sovuq tuproqda dastlabki o'sishni tezlashtiradi."
+      ],
+      "ec_sensitivity_ds_m": 6.0,
+      "ec_note_uz": "Bug'doy EC 6.0 dS/m gacha nisbatan barqaror; undan yuqorida unib chiqish va tuplanish yomonlashishi mumkin."
+    }
+  ],
+  "soil_condition_rules": {
+    "ph_low": 5.8,
+    "ph_high": 7.8,
+    "ph_very_high": 8.3,
+    "ec_moderate": 4.0,
+    "ec_high": 8.0,
+    "moisture_very_low": 12.0,
+    "moisture_low": 18.0,
+    "moisture_high": 40.0
+  }
+}

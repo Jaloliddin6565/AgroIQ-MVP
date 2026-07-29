@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "status": "PILOT",
+  "notice_uz": "O'g'it tarkibi mahsulot pasportiga ko'ra o'zgarishi mumkin. Aniq qiymatlarni yetkazib beruvchi hujjatidan tekshiring.",
+  "products": [
+    {
+      "key": "ammofos",
+      "name_uz": "Ammofos",
+      "name_en": "Ammophos (MAP)",
+      "p2o5_fraction": 0.46,
+      "n_fraction": 0.11,
+      "k2o_fraction": 0.0,
+      "form_uz": "Donador, suvda yaxshi eriydi",
+      "typical_price_uzs_per_kg": 6500,
+      "notes_uz": "Tarkibida azot ham bor — azotli o'g'it me'yorini shunga mos ravishda kamaytiring.",
+      "suitable_for_alkaline_soil": true
+    },
+    {
+      "key": "superfosfat",
+      "name_uz": "Superfosfat (oddiy)",
+      "name_en": "Single superphosphate",
+      "p2o5_fraction": 0.19,
+      "n_fraction": 0.0,
+      "k2o_fraction": 0.0,
+      "form_uz": "Kukun yoki donador, tarkibida gips (kalsiy sulfat) bor",
+      "typical_price_uzs_per_kg": 3200,
+      "notes_uz": "Tarkibidagi gips sho'rlangan va ishqoriy tuproqlarda qo'shimcha foyda berishi mumkin.",
+      "suitable_for_alkaline_soil": true
+    },
+    {
+      "key": "qosh_superfosfat",
+      "name_uz": "Qo'sh superfosfat",
+      "name_en": "Triple superphosphate",
+      "p2o5_fraction": 0.44,
+      "n_fraction": 0.0,
+      "k2o_fraction": 0.0,
+      "form_uz": "Donador, konsentratsiyasi yuqori",
+      "typical_price_uzs_per_kg": 7000,
+      "notes_uz": "Azot qo'shmaydi — azotli o'g'it alohida hisoblanadi.",
+      "suitable_for_alkaline_soil": true
+    }
+  ]
+}

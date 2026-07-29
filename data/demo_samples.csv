@@ -1,0 +1,4 @@
+demo_id,scenario_uz,description_uz,red,green,blue,reaction_time_sec,sample_temperature_c,ph,ec_ds_m,moisture_pct,crop_key,field_area_ha,target_yield_t_ha,fertilizer_key,expected_p_mg_kg,data_source
+demo_low,"1-ssenariy — Paxta, past fosfor",Ishqoriy tuproqda fosfor darajasi past. Model to'liq o'g'itlash me'yorini tavsiya qiladi.,162.3,202.9,230.7,600.0,24.0,8.1,1.8,21.0,paxta,12.0,3.5,ammofos,6.5,SYNTHETIC_DEMO
+demo_medium,"2-ssenariy — Bug'doy, o'rtacha fosfor","Fosfor o'rtacha, ammo elektr o'tkazuvchanlik yuqoriroq — sho'rlanish ogohlantirishi ishlaydi.",106.7,168.0,218.2,540.0,22.5,7.6,5.4,17.0,bugdoy,25.0,5.5,ammofos,14.0,SYNTHETIC_DEMO
+demo_high,3-ssenariy — Yuqori fosfor,Fosfor zaxirasi yuqori — qo'shimcha fosforli o'g'it tavsiya etilmaydi.,20.3,79.6,174.8,660.0,26.0,7.3,1.4,26.0,paxta,8.0,4.0,superfosfat,38.0,SYNTHETIC_DEMO

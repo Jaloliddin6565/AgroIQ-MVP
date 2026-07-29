@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0",
+  "method": "Olsen-P (0.5 M NaHCO3, pH 8.5)",
+  "unit": "mg/kg",
+  "status": "PILOT",
+  "notice_uz": "Ushbu chegaralar pilot (namunaviy) qiymatlar bo'lib, mahalliy tuproqshunos mutaxassis tomonidan validatsiya qilinishi shart.",
+  "notice_en": "These class boundaries are pilot/demo values and must be validated by a local soil scientist before field use.",
+  "classes": [
+    {
+      "key": "very_low",
+      "label_uz": "Juda past",
+      "label_en": "Very low",
+      "min": 0.0,
+      "max": 5.0,
+      "color": "#C0392B",
+      "description_uz": "Fosfor zaxirasi juda cheklangan. Hosildorlikning sezilarli pasayishi ehtimoli yuqori."
+    },
+    {
+      "key": "low",
+      "label_uz": "Past",
+      "label_en": "Low",
+      "min": 5.0,
+      "max": 10.0,
+      "color": "#E67E22",
+      "description_uz": "Fosfor yetishmasligi kuzatiladi. Fosforli o'g'itlash zarur."
+    },
+    {
+      "key": "medium",
+      "label_uz": "O'rtacha",
+      "label_en": "Medium",
+      "min": 10.0,
+      "max": 18.0,
+      "color": "#F1C40F",
+      "description_uz": "Fosfor darajasi o'rtacha. Rejalashtirilgan hosil uchun qo'llab-quvvatlovchi o'g'itlash tavsiya etiladi."
+    },
+    {
+      "key": "sufficient",
+      "label_uz": "Yetarli",
+      "label_en": "Sufficient",
+      "min": 18.0,
+      "max": 30.0,
+      "color": "#27AE60",
+      "description_uz": "Fosfor darajasi yetarli. Asosan hosil bilan olib chiqiladigan miqdorni qoplash kifoya."
+    },
+    {
+      "key": "high",
+      "label_uz": "Yuqori",
+      "label_en": "High",
+      "min": 30.0,
+      "max": 120.0,
+      "color": "#1F6FB2",
+      "description_uz": "Fosfor zaxirasi yuqori. Qo'shimcha fosforli o'g'it iqtisodiy va ekologik jihatdan asoslanmasligi mumkin."
+    }
+  ],
+  "gauge_max": 60.0
+}
