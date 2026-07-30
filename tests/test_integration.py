@@ -385,4 +385,66 @@ def test_config_files_exist_and_are_valid_json():
 def test_version_is_bumped():
     from src import __version__
 
-    assert __version__ == "0.2.0"
+    assert __version__ == "0.2.1"
+
+
+# ---------------------------------------------------------------------------
+# v0.2.1 — UI tuzilmasi (yon panel, yuqori chiziq, footer)
+# ---------------------------------------------------------------------------
+
+
+def test_sidebar_contains_only_branding():
+    """Yon panelda faqat logotip va qisqa brend matni qolishi kerak."""
+
+    sidebar_block = APP_SOURCE[
+        APP_SOURCE.index("with st.sidebar:") : APP_SOURCE.index("if model_error:")
+    ]
+    assert "render_logo" in sidebar_block
+    # Ko'chirilgan bloklar yon panelda BO'LMASLIGI kerak.
+    for removed in ("Ulanish holati", "status_pill", "__version__", "President AI Award",
+                    "DEMO_MODEL_BANNER", "st.markdown(\"---\")"):
+        assert removed not in sidebar_block, f"yon panelda qoldi: {removed}"
+
+
+def test_demo_disclosure_moved_to_top_strip_not_removed():
+    """Demo ma'lumot haqidagi ochiq ma'lumot yo'qolmasligi kerak — u ko'chirildi."""
+
+    assert "TOP_STRIP_DEMO_TEXT" in APP_SOURCE
+    assert "top_info_strip(" in APP_SOURCE
+    assert "sintetik ma'lumotlar asosida prototip" in APP_SOURCE
+
+
+def test_footer_is_rendered_with_version():
+    main_flow = APP_SOURCE[APP_SOURCE.index("def main()") :]
+    assert "footer(__app_name__, __version__)" in main_flow
+
+
+def test_phosphorus_chart_has_no_plotly_legend_or_axis_title():
+    """Legenda va o'q sarlavhasi HTML ga ko'chirilgan — to'qnashuv bo'lishi mumkin emas."""
+
+    from src.data_validation import load_thresholds
+    from src.ui_components import phosphorus_gauge
+
+    figure = phosphorus_gauge(12.0, load_thresholds(), 2.0)
+    assert figure.layout.showlegend is False
+    assert figure.layout.xaxis.title.text is None
+    for trace in figure.data:
+        assert trace.showlegend is False
+
+
+def test_phosphorus_chart_bottom_margin_fits_ticks():
+    from src.data_validation import load_thresholds
+    from src.ui_components import phosphorus_gauge
+
+    figure = phosphorus_gauge(12.0, load_thresholds(), 2.0)
+    # Faqat tik yozuvlari qolgani uchun pastki chekka yetarli.
+    assert figure.layout.margin.b >= 30
+    assert figure.layout.height <= 170
+
+
+def test_ui_exposes_new_layout_components():
+    from src import ui_components
+
+    for name in ("top_info_strip", "footer", "page_header",
+                 "phosphorus_result_panel", "phosphorus_scale_legend"):
+        assert hasattr(ui_components, name), f"{name} yo'q"

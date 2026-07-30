@@ -10,8 +10,8 @@ dalangizning oziqa holatini baholang hamda ekinga mos o'g'itlash tavsiyasini oli
 [![Python](https://img.shields.io/badge/Python-3.11-3776AB.svg)](https://www.python.org/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.50%2B-FF4B4B.svg)](https://streamlit.io/)
 [![License](https://img.shields.io/badge/License-MIT-1B5E20.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-240%20passed-27AE60.svg)](tests/)
-[![Version](https://img.shields.io/badge/version-v0.2.0-0E7C86.svg)](#)
+[![Tests](https://img.shields.io/badge/tests-246%20passed-27AE60.svg)](tests/)
+[![Version](https://img.shields.io/badge/version-v0.2.1-0E7C86.svg)](#)
 
 </div>
 
@@ -268,7 +268,7 @@ AgroIQ/
 │   ├── config.example.json · requirements-edge.txt · README.md
 │
 ├── data/ · models/ · scripts/ · assets/
-└── tests/                          # 240 ta test
+└── tests/                          # 246 ta test
     ├── test_validation.py · test_inference.py · test_recommendations.py
     ├── test_sensors.py             # 🆕 sensor, API, fayl, kalibrlash bayroqlari
     ├── test_fusion.py              # 🆕 birlashtirish, tafovut, ssenariylar
@@ -360,7 +360,8 @@ Shundan keyingina platforma azot bo'yicha miqdoriy me'yor bera boshlaydi.
 | Bosqich | Modul | Holat |
 |---|---|---|
 | v0.1.0 | Fosfor + o'g'itlash tavsiyasi | ✅ |
-| **v0.2.0** | **Universal sensor, gateway, birlashtirish qatlami** | ✅ **Joriy** |
+| v0.2.0 | Universal sensor, gateway, birlashtirish qatlami | ✅ |
+| **v0.2.1** | **UI/UX sayqallash: yuqori ma'lumot chizig'i, footer, grafik tuzatishlari** | ✅ **Joriy** |
 | v0.3.0 | Real kalibrlash dataseti (150–300 juftlik) | 🔜 |
 | v0.4.0 | Validatsiyalangan N va K kartrijlari | 📋 |
 | — | Sug'orish suvi diagnostikasi | 📋 |

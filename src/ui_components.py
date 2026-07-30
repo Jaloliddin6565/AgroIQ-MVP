@@ -219,6 +219,83 @@ def inject_css() -> None:
             div[role="radiogroup"] > label p {{ font-size: .85rem; }}
         }}
 
+        /* --- Yuqori ma'lumot chizig'i (v0.2.1) --- */
+        .agro-strip {{
+            display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem;
+            justify-content: space-between;
+            background: #FFFDF4; border: 1px solid #EDDFA8; border-radius: 12px;
+            padding: .55rem .85rem; margin-bottom: 1.1rem;
+        }}
+        .agro-strip-note {{ display: flex; align-items: center; gap: .55rem; min-width: 0; }}
+        .agro-strip-tag {{
+            background: #E9A21B; color: #fff; font-size: .68rem; font-weight: 800;
+            letter-spacing: .06em; text-transform: uppercase;
+            padding: .16rem .48rem; border-radius: 6px; flex-shrink: 0;
+        }}
+        .agro-strip-text {{ font-size: .82rem; color: #6B4B00; line-height: 1.45; }}
+        .agro-strip-pills {{ display: flex; flex-wrap: wrap; gap: .4rem; }}
+
+        /* --- Sahifa sarlavhasi ierarxiyasi --- */
+        .agro-page-head {{ margin: .1rem 0 1.15rem 0; }}
+        .agro-page-title {{
+            font-size: 1.92rem; font-weight: 750; color: {INK};
+            margin: 0 0 .25rem 0; letter-spacing: -.02em; line-height: 1.2;
+        }}
+        .agro-page-sub {{
+            font-size: .95rem; color: {MUTED}; margin: 0; line-height: 1.55; max-width: 62rem;
+        }}
+
+        /* --- Fosfor natijasi paneli --- */
+        .agro-pvalue {{
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: .75rem;
+            background: {SURFACE}; border: 1px solid {BORDER};
+            border-left: 5px solid {PRIMARY};
+            border-radius: 14px; padding: 1rem 1.2rem; margin-bottom: .6rem;
+        }}
+        .agro-pvalue .pv-number {{
+            font-size: 2.5rem; font-weight: 750; color: {INK};
+            line-height: 1.05; letter-spacing: -.02em;
+        }}
+        .agro-pvalue .pv-unit {{
+            font-size: 1rem; font-weight: 600; color: {MUTED}; margin-left: .3rem;
+        }}
+        .agro-pvalue .pv-sub {{ font-size: .84rem; color: {MUTED}; margin-top: .3rem; }}
+        .agro-pvalue .pv-status {{
+            color: #fff; font-weight: 700; font-size: .95rem;
+            padding: .4rem .9rem; border-radius: 999px; white-space: nowrap;
+        }}
+
+        /* --- Shkala izohi (Plotly legendasi o'rniga) --- */
+        .agro-legend {{
+            display: flex; flex-wrap: wrap; align-items: center; gap: .35rem .95rem;
+            padding: .55rem .2rem .1rem .2rem;
+        }}
+        .agro-legend-axis {{
+            font-size: .78rem; font-weight: 700; color: {INK};
+            margin-right: .2rem; white-space: nowrap;
+        }}
+        .agro-legend-item {{
+            display: inline-flex; align-items: center; gap: .32rem;
+            font-size: .78rem; color: {MUTED}; white-space: nowrap;
+        }}
+        .agro-legend-dot {{
+            width: 9px; height: 9px; border-radius: 3px; display: inline-block; flex-shrink: 0;
+        }}
+        .agro-legend-range {{ color: #93A395; font-size: .72rem; }}
+
+        /* --- Footer --- */
+        .agro-footer {{
+            display: flex; flex-wrap: wrap; gap: .4rem 1rem;
+            justify-content: space-between; align-items: center;
+            border-top: 1px solid {BORDER}; margin-top: 2.6rem;
+            padding: 1.1rem .2rem .4rem .2rem;
+            font-size: .8rem; color: {MUTED};
+        }}
+        .agro-footer b {{ color: {PRIMARY}; font-weight: 700; }}
+        .agro-footer-sep {{ margin: 0 .35rem; color: {BORDER}; }}
+        .agro-footer-right {{ font-size: .76rem; color: #93A395; }}
+
         /* --- Qurilma kartalari --- */
         .agro-device {{
             background: {SURFACE}; border: 1px solid {BORDER}; border-radius: 16px;
@@ -278,24 +355,77 @@ def inject_css() -> None:
             border-radius: 10px; font-weight: 650; border: 1px solid {BORDER};
             padding: .55rem 1.1rem;
         }}
+        /* --- Asosiy harakat tugmasi (CTA) — yuqori kontrast --- */
+        .stFormSubmitButton {{ margin-top: .9rem; }}
         .stFormSubmitButton > button {{
-            border-radius: 10px; font-weight: 650; padding: .55rem 1.1rem;
+            border-radius: 11px; font-weight: 700; padding: .8rem 1.4rem;
         }}
-        .stButton > button[kind="primary"],
-        .stFormSubmitButton > button[kind="primary"] {{
-            background: {PRIMARY}; border-color: {PRIMARY}; color: #FFFFFF;
+        /* DIQQAT: forma tugmasi `kind="primaryFormSubmit"` atributiga ega —
+           faqat `kind="primary"` ni nishonga olish yetarli emas. */
+        button[kind="primary"],
+        button[kind="primaryFormSubmit"],
+        button[data-testid="stBaseButton-primary"],
+        button[data-testid="stBaseButton-primaryFormSubmit"] {{
+            background: {PRIMARY} !important;
+            border: 1px solid {PRIMARY} !important;
+            color: #FFFFFF !important;
+            font-weight: 700 !important;
+            box-shadow: 0 2px 6px rgba(27, 94, 32, .22);
         }}
-        .stButton > button[kind="primary"] p,
-        .stFormSubmitButton > button[kind="primary"] p {{ color: #FFFFFF; }}
-        .stButton > button[kind="primary"]:hover,
-        .stFormSubmitButton > button[kind="primary"]:hover {{
-            background: {PRIMARY_SOFT}; border-color: {PRIMARY_SOFT}; color: #FFFFFF;
+        button[kind="primary"] p,
+        button[kind="primaryFormSubmit"] p,
+        button[data-testid="stBaseButton-primary"] p,
+        button[data-testid="stBaseButton-primaryFormSubmit"] p {{
+            color: #FFFFFF !important;
+            font-weight: 700 !important;
+            font-size: 1rem !important;
         }}
+        button[kind="primary"]:hover,
+        button[kind="primaryFormSubmit"]:hover,
+        button[data-testid="stBaseButton-primary"]:hover,
+        button[data-testid="stBaseButton-primaryFormSubmit"]:hover {{
+            background: {PRIMARY_SOFT} !important;
+            border-color: {PRIMARY_SOFT} !important;
+            box-shadow: 0 4px 12px rgba(27, 94, 32, .3);
+        }}
+        button[kind="primary"]:focus-visible,
+        button[kind="primaryFormSubmit"]:focus-visible,
+        button[data-testid="stBaseButton-primary"]:focus-visible,
+        button[data-testid="stBaseButton-primaryFormSubmit"]:focus-visible {{
+            outline: 3px solid rgba(14, 124, 134, .45) !important;
+            outline-offset: 2px;
+        }}
+        button[kind="primary"]:active,
+        button[kind="primaryFormSubmit"]:active {{ transform: translateY(1px); }}
         .stDownloadButton > button {{
-            border-radius: 10px; font-weight: 650; background: {ACCENT};
-            color: #fff; border: 1px solid {ACCENT};
+            border-radius: 11px; font-weight: 700; background: {ACCENT};
+            color: #fff; border: 1px solid {ACCENT}; padding: .62rem 1.1rem;
+            box-shadow: 0 2px 6px rgba(14, 124, 134, .2);
         }}
-        .stDownloadButton > button p {{ color: #FFFFFF; }}
+        .stDownloadButton > button p {{ color: #FFFFFF !important; font-weight: 700; }}
+        .stDownloadButton > button:hover {{ background: #0B6870; border-color: #0B6870; }}
+
+        /* --- Boshqaruv elementlari: izchil masofa va o'qilishi --- */
+        div[data-testid="stNumberInput"] label p,
+        div[data-testid="stTextInput"] label p,
+        div[data-testid="stSelectbox"] label p,
+        div[data-testid="stDateInput"] label p,
+        div[data-testid="stTimeInput"] label p {{
+            font-size: .85rem; font-weight: 600; color: {INK};
+        }}
+        div[data-testid="stNumberInput"],
+        div[data-testid="stTextInput"],
+        div[data-testid="stSelectbox"] {{ margin-bottom: .35rem; }}
+        div[data-testid="stFileUploader"] section {{
+            border: 1.5px dashed {BORDER}; border-radius: 12px; background: {CANVAS};
+            padding: .9rem;
+        }}
+        div[data-testid="stFileUploader"] section:hover {{ border-color: {ACCENT}; }}
+        /* Forma ichidagi konteynerlar orasida nafas oladigan joy */
+        div[data-testid="stForm"] {{
+            border: none; padding: 0; background: transparent;
+        }}
+        div[data-testid="stVerticalBlockBorderWrapper"] {{ border-radius: 14px; }}
         div[data-testid="stMetricValue"] {{ color: {INK}; }}
         section[data-testid="stSidebar"] {{
             background: {SURFACE}; border-right: 1px solid {BORDER};
@@ -307,11 +437,46 @@ def inject_css() -> None:
         div[data-testid="stExpander"] details {{
             border: 1px solid {BORDER}; border-radius: 12px; background: {SURFACE};
         }}
-        @media (max-width: 640px) {{
-            .agro-hero {{ padding: 1.6rem 1.2rem; }}
-            .agro-hero h1 {{ font-size: 1.5rem; }}
-            .block-container {{ padding-left: .8rem; padding-right: .8rem; }}
+        /* --- Tor ekranlar uchun moslashuv --- */
+        @media (max-width: 900px) {{
+            .agro-strip {{ gap: .5rem; }}
+            .agro-strip-pills {{ width: 100%; }}
         }}
+        @media (max-width: 640px) {{
+            .agro-hero {{ padding: 1.5rem 1.15rem; border-radius: 18px; }}
+            .agro-hero h1 {{ font-size: 1.42rem; line-height: 1.28; }}
+            .agro-hero p {{ font-size: .93rem; }}
+            .block-container {{
+                padding-left: .85rem; padding-right: .85rem; padding-top: 1.4rem;
+            }}
+            .agro-page-title {{ font-size: 1.45rem; }}
+            .agro-page-sub {{ font-size: .88rem; }}
+
+            /* Metrik kartalar tor ekranda ham o'qiladigan bo'lib qolsin */
+            .agro-metric {{ padding: .8rem .9rem; }}
+            .agro-metric .value {{ font-size: 1.5rem; }}
+            .agro-metric .label {{ font-size: .72rem; letter-spacing: .04em; }}
+            .agro-pvalue {{ padding: .9rem 1rem; }}
+            .agro-pvalue .pv-number {{ font-size: 2.05rem; }}
+            .agro-pvalue .pv-status {{ font-size: .86rem; padding: .32rem .75rem; }}
+
+            .agro-card, .agro-step, .agro-device {{ padding: .95rem 1rem; }}
+            .agro-arch {{ padding: .75rem .8rem; }}
+            .agro-arch .node {{ font-size: .76rem; padding: .38rem .55rem; }}
+
+            /* Tugmalar chekkaga tegib turmasligi uchun */
+            .stButton > button, .stFormSubmitButton > button,
+            .stDownloadButton > button {{ width: 100%; }}
+            .agro-footer {{ flex-direction: column; align-items: flex-start; }}
+            .agro-legend {{ gap: .3rem .7rem; }}
+        }}
+        /* Streamlit ustunlari tor ekranda bir-biriga yopishmasligi kerak */
+        @media (max-width: 640px) {{
+            div[data-testid="stHorizontalBlock"] {{ gap: .65rem !important; }}
+            div[data-testid="stColumn"] {{ min-width: 100% !important; }}
+        }}
+        /* Grafiklar konteynerdan chiqib ketmasligi kerak */
+        div[data-testid="stPlotlyChart"], .js-plotly-plot {{ max-width: 100%; }}
         </style>
         """,
         unsafe_allow_html=True,
@@ -428,12 +593,69 @@ def disclaimer_box(text: str) -> None:
 # ---------------------------------------------------------------------------
 
 
+def phosphorus_result_panel(
+    value: float,
+    unit: str,
+    status_label: str,
+    status_color: str,
+    uncertainty: float,
+    ci_low: float,
+    ci_high: float,
+) -> None:
+    """Fosfor natijasining asosiy ko'rsatkichi — katta va aniq.
+
+    Asosiy qiymat vizual jihatdan ustun, noaniqlik esa ikkinchi darajali.
+    Qiymat grafik ichida emas, alohida panelda ko'rsatilgani uchun grafikdagi
+    yozuvlar bilan to'qnashuv umuman yuz bermaydi.
+    """
+
+    st.markdown(
+        f"""
+        <div class="agro-pvalue">
+            <div class="pv-main">
+                <div class="pv-number">{value:.1f}<span class="pv-unit">{unit}</span></div>
+                <div class="pv-sub">±{uncertainty:.1f} {unit} &nbsp;·&nbsp;
+                    95% oraliq: {ci_low:.1f}–{ci_high:.1f}</div>
+            </div>
+            <div class="pv-status" style="background:{status_color};">{status_label}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def phosphorus_scale_legend(thresholds: dict[str, Any]) -> None:
+    """Fosfor shkalasi izohi — HTML ko'rinishida (Plotly legendasi o'rniga).
+
+    Legendani grafikdan tashqariga chiqarish to'qnashuv muammosini butunlay
+    yo'q qiladi va tor ekranlarda tabiiy ravishda qatorlarga bo'linadi.
+    """
+
+    items = "".join(
+        f'<span class="agro-legend-item">'
+        f'<span class="agro-legend-dot" style="background:{item.get("color", PRIMARY)};"></span>'
+        f'{item["label_uz"]} <span class="agro-legend-range">'
+        f'{float(item["min"]):.0f}–{float(item["max"]):.0f}</span></span>'
+        for item in thresholds["classes"]
+    )
+    st.markdown(
+        f'<div class="agro-legend"><span class="agro-legend-axis">Olsen-P, mg/kg</span>{items}</div>',
+        unsafe_allow_html=True,
+    )
+
+
 def phosphorus_gauge(
     value: float,
     thresholds: dict[str, Any],
     uncertainty: float = 0.0,
+    show_value_label: bool = True,
 ) -> go.Figure:
-    """Fosfor holatini ko'rsatuvchi gorizontal segmentli indikator."""
+    """Fosfor holatini ko'rsatuvchi gorizontal segmentli indikator.
+
+    Plotly legendasi va o'q sarlavhasi O'CHIRILGAN — ular HTML komponentlarga
+    ko'chirilgan (`phosphorus_scale_legend`). Shu sababli yozuvlar bir-birining
+    ustiga tushmaydi va grafik balandligi kichik bo'lib qoladi.
+    """
 
     classes = thresholds["classes"]
     gauge_max = float(thresholds.get("gauge_max", 60.0))
@@ -454,7 +676,7 @@ def phosphorus_gauge(
                 marker={"color": item.get("color", PRIMARY), "line": {"width": 0}},
                 name=str(item["label_uz"]),
                 hovertemplate=f"{item['label_uz']}: {low:.0f}–{float(item['max']):.0f} mg/kg<extra></extra>",
-                showlegend=True,
+                showlegend=False,
             )
         )
 
@@ -488,45 +710,45 @@ def phosphorus_gauge(
                 layer="above",
             )
         figure.add_annotation(
-            x=high, y=0.66, xshift=8, text=f"±{uncertainty:.1f}", showarrow=False,
+            x=high, y=0.72, xshift=8, text=f"±{uncertainty:.1f}", showarrow=False,
             xanchor="left", font={"size": 11, "color": MUTED},
         )
 
-    figure.add_annotation(
-        x=value,
-        y=1.02,
-        text=f"<b>{value:.1f} mg/kg</b>",
-        showarrow=False,
-        font={"size": 15, "color": INK},
-    )
+    if show_value_label:
+        figure.add_annotation(
+            x=value,
+            y=1.12,
+            text=f"<b>{value:.1f}</b>",
+            showarrow=False,
+            font={"size": 14, "color": INK},
+        )
 
     figure.update_layout(
         barmode="stack",
-        height=190,
-        margin={"l": 10, "r": 10, "t": 30, "b": 30},
+        # Legenda va o'q sarlavhasi olib tashlangani uchun balandlik kamaydi.
+        height=150,
+        margin={"l": 12, "r": 12, "t": 26, "b": 34},
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         xaxis={
             "range": [0, display_max],
-            "title": "Olsen-P, mg/kg",
+            "title": None,
             "showgrid": False,
             "zeroline": False,
-            "tickfont": {"color": MUTED},
+            "ticks": "outside",
+            "ticklen": 4,
+            "tickcolor": BORDER,
+            "tickfont": {"color": MUTED, "size": 11},
+            "automargin": True,
         },
         yaxis={
             "showticklabels": False,
             "showgrid": False,
             "zeroline": False,
-            "range": [-0.6, 1.25],
+            "range": [-0.55, 1.45],
+            "fixedrange": True,
         },
-        legend={
-            "orientation": "h",
-            "yanchor": "bottom",
-            "y": -0.55,
-            "x": 0,
-            "traceorder": "normal",
-            "font": {"size": 11, "color": MUTED},
-        },
+        showlegend=False,
         font={"family": "Inter, Segoe UI, sans-serif"},
     )
     return figure
@@ -705,6 +927,70 @@ def device_card(
     )
 
 
+def top_info_strip(
+    demo_mode: bool,
+    demo_text: str,
+    analyzer_state: tuple[str, str] | None = None,
+    sensor_state: tuple[str, str] | None = None,
+) -> None:
+    """Kompakt yuqori ma'lumot chizig'i.
+
+    Yon paneldan olib tashlangan demo ogohlantirishi va qurilma holati shu yerga
+    ko'chirildi — u ko'rinib turadi, lekin vizual jihatdan og'ir emas.
+    """
+
+    if not demo_mode and analyzer_state is None and sensor_state is None:
+        return
+
+    left = ""
+    if demo_mode:
+        left = (
+            '<div class="agro-strip-note">'
+            '<span class="agro-strip-tag">Demo</span>'
+            f'<span class="agro-strip-text">{demo_text}</span>'
+            "</div>"
+        )
+
+    pills: list[str] = []
+    for state in (analyzer_state, sensor_state):
+        if state is not None:
+            pills.append(status_pill(state[0], state[1]))
+    right = f'<div class="agro-strip-pills">{"".join(pills)}</div>' if pills else ""
+
+    st.markdown(f'<div class="agro-strip">{left}{right}</div>', unsafe_allow_html=True)
+
+
+def page_header(title: str, subtitle: str = "") -> None:
+    """Sahifa sarlavhasi va izohi — barcha sahifalarda bir xil ierarxiya."""
+
+    subtitle_html = f'<p class="agro-page-sub">{subtitle}</p>' if subtitle else ""
+    st.markdown(
+        f'<div class="agro-page-head"><h1 class="agro-page-title">{title}</h1>'
+        f"{subtitle_html}</div>",
+        unsafe_allow_html=True,
+    )
+
+
+def footer(app_name: str, version: str) -> None:
+    """Sahifa oxiridagi footer — versiya ma'lumoti shu yerga ko'chirildi."""
+
+    st.markdown(
+        f"""
+        <div class="agro-footer">
+            <div class="agro-footer-left">
+                <b>{app_name} MVP v{version}</b>
+                <span class="agro-footer-sep">·</span>
+                President AI Award prototipi
+            </div>
+            <div class="agro-footer-right">
+                AI-assisted soil diagnostics and recommendation prototype
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 def architecture_row(nodes: list[str], accent_last: bool = True) -> None:
     """Bir qatorli arxitektura diagrammasi (matn tugunlari va strelkalar)."""
 
@@ -787,9 +1073,15 @@ def diagnostic_index_gauge(index: dict[str, Any]) -> go.Figure:
         go.Indicator(
             mode="gauge+number",
             value=float(index["score"]),
-            number={"suffix": "", "font": {"size": 34, "color": INK}},
+            number={"suffix": "", "font": {"size": 32, "color": INK}},
             gauge={
-                "axis": {"range": [0, 100], "tickwidth": 1, "tickcolor": MUTED},
+                "axis": {
+                    "range": [0, 100],
+                    "tickwidth": 1,
+                    "tickcolor": MUTED,
+                    "tickvals": [0, 20, 40, 60, 80, 100],
+                    "tickfont": {"size": 10, "color": MUTED},
+                },
                 "bar": {"color": index.get("color", PRIMARY), "thickness": 0.7},
                 "bgcolor": "rgba(0,0,0,0)",
                 "borderwidth": 0,
@@ -803,8 +1095,9 @@ def diagnostic_index_gauge(index: dict[str, Any]) -> go.Figure:
         )
     )
     figure.update_layout(
-        height=210,
-        margin={"l": 20, "r": 20, "t": 10, "b": 10},
+        height=215,
+        # Chekka teglari (0 va 100) kesilib qolmasligi uchun yon chekkalar kengaytirildi.
+        margin={"l": 42, "r": 42, "t": 14, "b": 8},
         paper_bgcolor="rgba(0,0,0,0)",
         font={"family": "Inter, Segoe UI, sans-serif", "color": INK},
     )

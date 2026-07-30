@@ -23,7 +23,6 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src import (  # noqa: E402
-    DEMO_MODEL_BANNER_UZ,
     DISCLAIMER_UZ,
     PILOT_RECOMMENDATION_NOTICE_UZ,
     __app_name__,
@@ -72,27 +71,30 @@ from src.ui_components import (  # noqa: E402
     PRIMARY,
     alert_card,
     architecture_row,
-    banner,
     color_swatch,
     confidence_badge,
     device_card,
     diagnostic_index_gauge,
     disclaimer_box,
     feature_importance_chart,
+    footer,
     info_card,
     inject_css,
     metric_card,
     model_comparison_chart,
     nutrient_card,
+    page_header,
     phosphorus_comparison_chart,
     phosphorus_gauge,
+    phosphorus_result_panel,
+    phosphorus_scale_legend,
     prediction_scatter,
     render_logo,
     section_header,
     soil_condition_chart,
     source_badges,
-    status_pill,
     step_card,
+    top_info_strip,
     top_navigation,
 )
 
@@ -117,6 +119,12 @@ PAGES = [
     PAGE_DEMO,
     PAGE_ABOUT,
 ]
+
+#: Yuqori ma'lumot chizig'idagi demo ogohlantirishi (yon paneldan ko'chirilgan).
+TOP_STRIP_DEMO_TEXT = (
+    "Demo model: platforma sintetik ma'lumotlar asosida prototip darajasida ishlaydi. "
+    "Dala uchun real kalibrlash zarur."
+)
 
 st.set_page_config(
     page_title="AgroIQ — tuproq intellekti platformasi",
@@ -431,11 +439,11 @@ def page_home(configs: dict[str, Any], model_info: dict[str, Any] | None) -> Non
 
 
 def page_analysis(configs: dict[str, Any]) -> None:
-    st.markdown("## Yangi tahlil")
-    st.caption(
+    page_header(
+        "Yangi tahlil",
         "Fosforni baholashda faqat AgroIQ kolorimetrik o'lchovi ishlatiladi. "
         "Universal sensor qiymatlari tuproq sharoitini baholash va tavsiyani "
-        "aniqlashtirish uchun kerak."
+        "aniqlashtirish uchun kerak.",
     )
 
     crops = _crop_options(configs)
@@ -830,13 +838,10 @@ def page_results(configs: dict[str, Any], model_info: dict[str, Any] | None) -> 
     analyzer = result["analyzer"]
     sensor = result["sensor"]
 
-    st.markdown("## Tahlil natijasi")
-    st.caption(
-        f"Namuna: **{result['sample_label']}** · Tahlil ID: `{result['analysis_id']}`"
+    page_header(
+        "Tahlil natijasi",
+        f"Namuna: {result['sample_label']}  ·  Tahlil ID: {result['analysis_id']}",
     )
-
-    if model_info and model_info.get("dataset_kind") == "demo":
-        banner(f"⚠️ {DEMO_MODEL_BANNER_UZ}")
 
     if fusion.phosphorus_comparison.agrees is False:
         alert_card(
@@ -851,7 +856,7 @@ def page_results(configs: dict[str, Any], model_info: dict[str, Any] | None) -> 
         metric_card(
             "Fosfor (Olsen-P)",
             f"{estimate.olsen_p_mg_kg:.1f}", "mg/kg",
-            sub=f"±{estimate.uncertainty_mg_kg:.1f} · o'zlashtiriladigan", accent=PRIMARY,
+            sub=f"±{estimate.uncertainty_mg_kg:.1f} mg/kg", accent=PRIMARY,
         )
     with top[1]:
         metric_card("Fosfor holati", estimate.status_label_uz,
@@ -873,7 +878,7 @@ def page_results(configs: dict[str, Any], model_info: dict[str, Any] | None) -> 
             "%", sub=moisture_info.band_label_uz, accent=moisture_info.color,
         )
     with top[5]:
-        metric_card("Tavsiya ishonchliligi", fusion.confidence_label_uz,
+        metric_card("Ishonchlilik", fusion.confidence_label_uz,
                     sub="Konservativ baholash", accent=ACCENT)
 
     st.write("")
@@ -887,6 +892,7 @@ def page_results(configs: dict[str, Any], model_info: dict[str, Any] | None) -> 
         metric_card(
             "Universal sensor P indikatori",
             f"{sensor_p:.1f}" if sensor_p is not None else "—",
+            "mg/kg",
             sub="Bu Olsen-P EMAS — faqat qiyosiy ko'rsatkich",
             accent="#9AA69C",
         )
@@ -928,10 +934,22 @@ def page_results(configs: dict[str, Any], model_info: dict[str, Any] | None) -> 
     section_header("B. Fosfor bo'yicha AI natijasi", "Kolorimetrik model — asosiy manba")
     phosphorus_columns = st.columns([3, 2], gap="large")
     with phosphorus_columns[0]:
+        phosphorus_result_panel(
+            value=estimate.olsen_p_mg_kg,
+            unit="mg/kg",
+            status_label=estimate.status_label_uz,
+            status_color=estimate.status_color,
+            uncertainty=estimate.uncertainty_mg_kg,
+            ci_low=estimate.ci95_low,
+            ci_high=estimate.ci95_high,
+        )
         st.plotly_chart(
-            phosphorus_gauge(estimate.olsen_p_mg_kg, configs["thresholds"], estimate.uncertainty_mg_kg),
+            phosphorus_gauge(
+                estimate.olsen_p_mg_kg, configs["thresholds"], estimate.uncertainty_mg_kg
+            ),
             width="stretch", config={"displayModeBar": False},
         )
+        phosphorus_scale_legend(configs["thresholds"])
         st.caption(estimate.status_description_uz)
     with phosphorus_columns[1]:
         comparison = fusion.phosphorus_comparison
@@ -1136,10 +1154,10 @@ def page_results(configs: dict[str, Any], model_info: dict[str, Any] | None) -> 
 
 
 def page_devices(configs: dict[str, Any]) -> None:
-    st.markdown("## Qurilmalar")
-    st.caption(
+    page_header(
+        "Qurilmalar",
         "AgroIQ ikkita mustaqil o'lchov manbaidan foydalanadi. Ular turli vazifalarni "
-        "bajaradi va natijalari hech qachon aralashtirilmaydi."
+        "bajaradi va natijalari hech qachon aralashtirilmaydi.",
     )
 
     profiles = configs["devices"]
@@ -1315,19 +1333,16 @@ def page_devices(configs: dict[str, Any]) -> None:
 
 
 def page_model(model_info: dict[str, Any] | None, configs: dict[str, Any]) -> None:
-    st.markdown("## Model va validatsiya")
+    page_header(
+        "Model va validatsiya",
+        "Mustaqil ekspertlar uchun: arxitektura, o'qitish metodologiyasi, metrikalar va "
+        "ochiq cheklovlar.",
+    )
     if model_info is None:
         st.error(
             "Model yuklanmagan. `python scripts/train_model.py` buyrug'ini bajaring va sahifani yangilang."
         )
         return
-
-    st.caption(
-        "Ushbu sahifa mustaqil ekspertlar uchun: arxitektura, o'qitish metodologiyasi, "
-        "metrikalar va cheklovlar ochiq ko'rsatilgan."
-    )
-    if model_info["dataset_kind"] == "demo":
-        banner(f"⚠️ {DEMO_MODEL_BANNER_UZ}")
 
     # --- Arxitektura ---
     section_header("Ma'lumotlarni birlashtirish arxitekturasi")
@@ -1507,13 +1522,12 @@ def page_model(model_info: dict[str, Any] | None, configs: dict[str, Any]) -> No
 
 
 def page_demo(configs: dict[str, Any]) -> None:
-    st.markdown("## Demo rejimi")
-    st.caption(
+    page_header(
+        "Demo rejimi",
         "To'rtta tayyorlangan ssenariy platformaning turli sharoitlarda qanday javob "
         "berishini ko'rsatadi. Har biri ikkala qurilma ma'lumotini ham o'z ichiga oladi. "
-        "Hech qanday fayl yuklash yoki apparat talab etilmaydi."
+        "Hech qanday fayl yuklash yoki apparat talab etilmaydi.",
     )
-    banner(f"⚠️ {DEMO_MODEL_BANNER_UZ}")
 
     if "demo_index" not in st.session_state:
         st.session_state["demo_index"] = 0
@@ -1578,7 +1592,10 @@ def page_demo(configs: dict[str, Any]) -> None:
 
 
 def page_about() -> None:
-    st.markdown("## Loyiha haqida")
+    page_header(
+        "Loyiha haqida",
+        "AgroIQ mahsuloti, maqsadli mijozlari, biznes modeli va rivojlanish yo'nalishi.",
+    )
 
     columns = st.columns(2, gap="large")
     with columns[0]:
@@ -1676,44 +1693,13 @@ def main() -> None:
             "`python scripts/train_model.py` buyrug'ini bajaring."
         )
 
-    # --- Yon panel: FAQAT brend, ogohlantirish va versiya (navigatsiya YO'Q) ---
+    # --- Yon panel: FAQAT brend (navigatsiya, holat va versiya YO'Q) ---
     with st.sidebar:
         render_logo(compact=True)
         st.markdown(
-            f"<div style='color:{MUTED};font-size:.82rem;line-height:1.5;margin-bottom:1rem;'>"
+            f"<div style='color:{MUTED};font-size:.82rem;line-height:1.55;'>"
             "Integratsiyalashgan tuproq intellekti va aniq o'g'itlash platformasi"
             "</div>",
-            unsafe_allow_html=True,
-        )
-        if model_info and model_info["dataset_kind"] == "demo":
-            st.markdown(
-                "<div style='background:#FFF8E1;border:1px solid #EBD08A;border-radius:10px;"
-                "padding:.6rem .7rem;font-size:.76rem;color:#6B4B00;line-height:1.45;'>"
-                "<b>Demo model</b><br/>Sintetik ma'lumotda o'qitilgan. Dala uchun kalibrlash zarur."
-                "</div>",
-                unsafe_allow_html=True,
-            )
-        st.write("")
-        # Holat qurilmalar sahifasidagi kartalar bilan izchil bo'lishi kerak.
-        api_reading = st.session_state.get("api_reading")
-        active_result = st.session_state.get("result")
-        if api_reading is not None:
-            sensor_state, sensor_label = "online", "Sensor: API orqali ulangan"
-        elif active_result and active_result.get("sensor") is not None:
-            sensor_state, sensor_label = "demo", "Sensor: ma'lumot mavjud"
-        else:
-            sensor_state, sensor_label = "offline", "Sensor: ulanmagan"
-        analyzer_pill = status_pill("demo", "Analizator: demo / qo'lda")
-        sensor_pill = status_pill(sensor_state, sensor_label)
-        st.markdown(
-            f"<div style='font-size:.78rem;color:{MUTED};margin-bottom:.35rem;'>Ulanish holati</div>"
-            f"{analyzer_pill}<div style='height:.35rem;'></div>{sensor_pill}",
-            unsafe_allow_html=True,
-        )
-        st.markdown("---")
-        st.markdown(
-            f"<div style='color:{MUTED};font-size:.72rem;line-height:1.5;'>"
-            f"{__app_name__} MVP v{__version__}<br/>President AI Award prototipi</div>",
             unsafe_allow_html=True,
         )
 
@@ -1726,6 +1712,26 @@ def main() -> None:
 
     # --- Yuqori gorizontal navigatsiya ---
     page = top_navigation(PAGES, key="nav")
+
+    # --- Kompakt yuqori ma'lumot chizig'i (yon paneldan ko'chirildi) ---
+    api_reading = st.session_state.get("api_reading")
+    active_result = st.session_state.get("result")
+    if api_reading is not None:
+        sensor_state = ("online", "Sensor: ulangan")
+    elif active_result and active_result.get("sensor") is not None:
+        sensor_state = ("demo", "Sensor: ma'lumot mavjud")
+    else:
+        sensor_state = ("offline", "Sensor: ulanmagan")
+
+    # Qurilma holati asosan "Qurilmalar" sahifasida ko'rsatiladi; chiziqda esa
+    # faqat ish oqimi bilan bog'liq sahifalarda qisqacha eslatma beriladi.
+    show_device_state = page in {PAGE_ANALYSIS, PAGE_RESULTS, PAGE_DEVICES}
+    top_info_strip(
+        demo_mode=bool(model_info and model_info.get("dataset_kind") == "demo"),
+        demo_text=TOP_STRIP_DEMO_TEXT,
+        analyzer_state=("demo", "Analizator: demo / qo'lda") if show_device_state else None,
+        sensor_state=sensor_state if show_device_state else None,
+    )
 
     if page == PAGE_HOME:
         page_home(configs, model_info)
@@ -1747,6 +1753,9 @@ def main() -> None:
             page_demo(configs)
     elif page == PAGE_ABOUT:
         page_about()
+
+    # --- Footer: versiya ma'lumoti yon paneldan shu yerga ko'chirildi ---
+    footer(__app_name__, __version__)
 
 
 if __name__ == "__main__":
