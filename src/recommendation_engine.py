@@ -79,6 +79,21 @@ class Recommendation:
     estimated_cost_uzs_high: float | None = None
     no_phosphorus_needed: bool = False
     agronomic_notes_uz: list[str] = field(default_factory=list)
+    # --- v0.2.0 qo'shimchalari ---
+    growth_stage_key: str | None = None
+    growth_stage_label_uz: str | None = None
+    growth_stage_note_uz: str | None = None
+    previous_fertilizer_key: str | None = None
+    previous_fertilizer_note_uz: str | None = None
+    irrigation_note_uz: str | None = None
+    soil_texture_note_uz: str | None = None
+    nitrogen_status_uz: str | None = None
+    nitrogen_advice_uz: str | None = None
+    nitrogen_quantitative: bool = False
+    potassium_status_uz: str | None = None
+    potassium_advice_uz: str | None = None
+    potassium_quantitative: bool = False
+    stage_blocks_application: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
@@ -121,6 +136,44 @@ def status_multiplier(status_key: str, profiles: dict[str, Any] | None = None) -
         )
     entry = multipliers[status_key]
     return {"low": float(entry["low"]), "high": float(entry["high"])}
+
+
+def _lookup(entries: list[dict[str, Any]], key: str | None) -> dict[str, Any] | None:
+    """Ro'yxatdan kalit bo'yicha yozuvni topadi (topilmasa None)."""
+
+    if not key:
+        return None
+    for entry in entries:
+        if entry.get("key") == key:
+            return entry
+    return None
+
+
+def growth_stage_factor(
+    crop_key: str, stage_key: str | None, rules: dict[str, Any] | None = None
+) -> dict[str, Any] | None:
+    """Ekinning o'sish bosqichi bo'yicha fosfor samaradorlik koeffitsientini qaytaradi.
+
+    Kech bosqichlarda fosforni tuproqqa joylashtirish qiyinlashadi va samaradorlik
+    pasayadi — bu agronomik jihatdan asoslangan tuzatish.
+    """
+
+    from src.data_validation import load_recommendation_rules
+
+    rules = rules or load_recommendation_rules()
+    stages = rules.get("growth_stages", {}).get(crop_key, [])
+    return _lookup(stages, stage_key)
+
+
+def previous_fertilizer_credit(
+    key: str | None, rules: dict[str, Any] | None = None
+) -> dict[str, Any] | None:
+    """Oldingi mavsumdagi o'g'itlash uchun qoldiq fosfor krediti."""
+
+    from src.data_validation import load_recommendation_rules
+
+    rules = rules or load_recommendation_rules()
+    return _lookup(rules.get("previous_fertilizer_credit", []), key)
 
 
 def fertilizer_from_p2o5(required_p2o5_kg_ha: float, p2o5_fraction: float) -> float:
@@ -342,11 +395,29 @@ def build_recommendation(
     within_calibration: bool = True,
     profiles: dict[str, Any] | None = None,
     products: dict[str, Any] | None = None,
+    *,
+    growth_stage_key: str | None = None,
+    previous_fertilizer_key: str | None = None,
+    soil_texture_key: str | None = None,
+    irrigation_method_key: str | None = None,
+    soil_temperature_c: float | None = None,
+    nitrogen: Any | None = None,
+    potassium: Any | None = None,
+    fertilizer_price_uzs_per_kg: float | None = None,
+    rules: dict[str, Any] | None = None,
 ) -> Recommendation:
-    """Shaffof agronomik qoidalar asosida o'g'itlash tavsiyasini quradi."""
+    """Shaffof agronomik qoidalar asosida o'g'itlash tavsiyasini quradi.
+
+    v0.2.0: o'sish bosqichi, oldingi o'g'itlash krediti, tuproq mexanik tarkibi,
+    sug'orish usuli va N/K sifatiy bahosi qo'shildi. Barcha yangi parametrlar
+    ixtiyoriy — ularsiz funksiya v0.1.0 dagidek ishlaydi.
+    """
+
+    from src.data_validation import load_recommendation_rules
 
     profiles = profiles or load_crop_profiles()
     products = products or load_fertilizer_products()
+    rules = rules or load_recommendation_rules()
     crop = get_crop(crop_key, profiles)
     product = get_product(fertilizer_key, products)
 
@@ -390,9 +461,38 @@ def build_recommendation(
         }
     )
 
+    # 3b-qadam (ixtiyoriy): o'sish bosqichi bo'yicha samaradorlik koeffitsienti.
+    stage = growth_stage_factor(crop_key, growth_stage_key, rules)
+    stage_factor = 1.0
+    stage_blocks = False
+    if stage is not None:
+        stage_factor = float(stage.get("p_factor", 1.0))
+        stage_blocks = stage_factor <= 0.0
+        steps.append(
+            {
+                "step": "3b. O'sish bosqichi koeffitsienti",
+                "formula": f"Bosqich: {stage['label_uz']} — {stage.get('note_uz', '')}",
+                "result": f"x {stage_factor:.2f}",
+            }
+        )
+
+    # 3c-qadam (ixtiyoriy): oldingi o'g'itlashdan qoldiq fosfor krediti.
+    credit = previous_fertilizer_credit(previous_fertilizer_key, rules)
+    credit_fraction = 0.0
+    if credit is not None and float(credit.get("p_credit_fraction", 0.0)) > 0:
+        credit_fraction = float(credit["p_credit_fraction"])
+        steps.append(
+            {
+                "step": "3c. Oldingi o'g'itlash krediti",
+                "formula": f"{credit['label_uz']} — {credit.get('note_uz', '')}",
+                "result": f"x {1.0 - credit_fraction:.2f}",
+            }
+        )
+
     # 4-qadam: kerakli P2O5 oralig'i.
-    required_low = base_p2o5 * multiplier["low"] * ph_low
-    required_high = base_p2o5 * multiplier["high"] * ph_high
+    adjustment = stage_factor * (1.0 - credit_fraction)
+    required_low = base_p2o5 * multiplier["low"] * ph_low * adjustment
+    required_high = base_p2o5 * multiplier["high"] * ph_high * adjustment
     min_cap = float(crop.get("min_p2o5_kg_ha", 0.0))
     max_cap = float(crop.get("max_p2o5_kg_ha", 250.0))
     required_low = _round_to(min(max(required_low, min_cap), max_cap))
@@ -437,15 +537,50 @@ def build_recommendation(
     confidence = recommendation_confidence(model_confidence, within_calibration, warnings)
 
     no_phosphorus_needed = required_high <= 0.0
-    stage = str(crop.get("application_stage_uz", ""))
+    application_stage = str(crop.get("application_stage_uz", ""))
     method = str(crop.get("application_method_uz", ""))
     if no_phosphorus_needed:
-        stage = "Ushbu mavsumda fosforli o'g'it berish tavsiya etilmaydi."
-        method = (
-            "Tuproq zaxirasi yetarli — keyingi mavsumda takroriy tahlil o'tkazish tavsiya etiladi."
+        if stage_blocks:
+            application_stage = (
+                "Ushbu o'sish bosqichida fosforli o'g'it berish agronomik jihatdan "
+                "asoslanmaydi — me'yorni keyingi mavsumga rejalashtiring."
+            )
+            method = "Keyingi mavsum uchun ekish oldidan takroriy tahlil o'tkazing."
+        else:
+            application_stage = "Ushbu mavsumda fosforli o'g'it berish tavsiya etilmaydi."
+            method = (
+                "Tuproq zaxirasi yetarli — keyingi mavsumda takroriy tahlil o'tkazish tavsiya etiladi."
+            )
+
+    # Sug'orish usuli va tuproq tarkibi bo'yicha izohlar.
+    irrigation = _lookup(rules.get("irrigation_methods", []), irrigation_method_key)
+    texture = _lookup(rules.get("soil_textures", []), soil_texture_key)
+
+    # Tuproq harorati bo'yicha qo'shimcha ogohlantirish.
+    if soil_temperature_c is not None and soil_temperature_c < 10.0:
+        warnings.append(
+            SoilWarning(
+                key="soil_temperature_cold",
+                level="caution",
+                title_uz="Sovuq tuproq",
+                message_uz=(
+                    f"Tuproq harorati {soil_temperature_c:.1f} °C — sovuq tuproqda fosforning "
+                    "o'zlashtirilishi sekinlashadi. Starter (qator bilan) qo'llash samaraliroq bo'lishi mumkin."
+                ),
+            )
         )
 
-    price = product.get("typical_price_uzs_per_kg")
+    # Azot va kaliy — FAQAT sifatiy (kalibrlashsiz miqdoriy me'yor berilmaydi).
+    nitrogen_status = getattr(nitrogen, "status_label_uz", None)
+    nitrogen_advice = getattr(nitrogen, "advice_uz", None)
+    nitrogen_quantitative = bool(getattr(nitrogen, "quantitative_enabled", False))
+    potassium_status = getattr(potassium, "status_label_uz", None)
+    potassium_advice = getattr(potassium, "advice_uz", None)
+    potassium_quantitative = bool(getattr(potassium, "quantitative_enabled", False))
+
+    price = fertilizer_price_uzs_per_kg
+    if price is None:
+        price = product.get("typical_price_uzs_per_kg")
     cost_low = float(price) * total_low if price else None
     cost_high = float(price) * total_high if price else None
 
@@ -467,7 +602,7 @@ def build_recommendation(
         total_bags_high=round(total_high / BAG_WEIGHT_KG, 1),
         field_area_ha=field_area_ha,
         target_yield_t_ha=target_yield_t_ha,
-        application_stage_uz=stage,
+        application_stage_uz=application_stage,
         application_method_uz=method,
         warnings=warnings,
         confidence=confidence,
@@ -477,4 +612,18 @@ def build_recommendation(
         estimated_cost_uzs_high=round(cost_high) if cost_high is not None else None,
         no_phosphorus_needed=no_phosphorus_needed,
         agronomic_notes_uz=list(crop.get("agronomic_notes_uz", [])),
+        growth_stage_key=growth_stage_key,
+        growth_stage_label_uz=stage["label_uz"] if stage else None,
+        growth_stage_note_uz=stage.get("note_uz") if stage else None,
+        previous_fertilizer_key=previous_fertilizer_key,
+        previous_fertilizer_note_uz=credit.get("note_uz") if credit else None,
+        irrigation_note_uz=irrigation.get("note_uz") if irrigation else None,
+        soil_texture_note_uz=texture.get("note_uz") if texture else None,
+        nitrogen_status_uz=nitrogen_status,
+        nitrogen_advice_uz=nitrogen_advice,
+        nitrogen_quantitative=nitrogen_quantitative,
+        potassium_status_uz=potassium_status,
+        potassium_advice_uz=potassium_advice,
+        potassium_quantitative=potassium_quantitative,
+        stage_blocks_application=stage_blocks,
     )

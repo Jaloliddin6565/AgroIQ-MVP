@@ -158,6 +158,8 @@ def build_pdf_report(
     model_info: dict[str, Any] | None = None,
     analysis_id: str | None = None,
     sample_label: str = "Namuna",
+    fusion: Any | None = None,
+    device_info: dict[str, Any] | None = None,
 ) -> bytes:
     """To'liq PDF hisobotni xotirada yaratadi va baytlar sifatida qaytaradi."""
 
@@ -240,32 +242,90 @@ def build_pdf_report(
         story.append(headline)
         story.append(Spacer(1, 6))
 
-        # --- Kiritilgan o'lchovlar ---
-        story.append(Paragraph("1. Kiritilgan o'lchovlar", styles["h2"]))
+        # --- 1. AgroIQ analizatori (kolorimetrik) ---
         story.append(
-            _kv_table(
-                [
-                    (
-                        "Kolorimetriya (R / G / B)",
-                        f"{measurements.get('red', 0):.0f} / {measurements.get('green', 0):.0f} / "
-                        f"{measurements.get('blue', 0):.0f}",
-                    ),
-                    ("Reaksiya vaqti", f"{measurements.get('reaction_time_sec', 0):.0f} sek"),
-                    ("Namuna harorati", f"{measurements.get('sample_temperature_c', 0):.1f} °C"),
-                    ("Tuproq pH", f"{measurements.get('ph', 0):.2f}"),
-                    ("Elektr o'tkazuvchanlik (EC)", f"{measurements.get('ec_ds_m', 0):.2f} dS/m"),
-                    ("Namlik", f"{measurements.get('moisture_pct', 0):.1f} %"),
-                    ("Ekin", recommendation.crop_name_uz),
-                    ("Dala maydoni", f"{recommendation.field_area_ha:g} ga"),
-                    ("Maqsadli hosildorlik", f"{recommendation.target_yield_t_ha:g} t/ga"),
-                ],
-                styles,
-                content_width,
-            )
+            Paragraph("1. AgroIQ portativ fosfor analizatori", styles["h2"])
         )
+        analyzer_rows = [
+            (
+                "Kolorimetriya (R / G / B)",
+                f"{measurements.get('red', 0):.0f} / {measurements.get('green', 0):.0f} / "
+                f"{measurements.get('blue', 0):.0f}",
+            ),
+            ("Reaksiya vaqti", f"{measurements.get('reaction_time_sec', 0):.0f} sek"),
+            ("Namuna harorati", f"{measurements.get('sample_temperature_c', 0):.1f} °C"),
+        ]
+        device_info = device_info or {}
+        if device_info.get("analyzer_device_id"):
+            analyzer_rows.append(("Analizator ID", str(device_info["analyzer_device_id"])))
+        if device_info.get("cartridge_batch_id"):
+            analyzer_rows.append(("Kartrij partiyasi", str(device_info["cartridge_batch_id"])))
+        analyzer_rows.append(
+            ("Vazifasi", "O'simlik o'zlashtira oladigan fosforni (Olsen-P) baholash — ASOSIY manba")
+        )
+        story.append(_kv_table(analyzer_rows, styles, content_width))
+
+        # --- 2. Universal tuproq sensori ---
+        story.append(Paragraph("2. Universal tuproq sensori", styles["h2"]))
+        sensor_rows: list[tuple[str, str]] = []
+        if device_info.get("sensor_device_id"):
+            sensor_rows.append(("Sensor ID", str(device_info["sensor_device_id"])))
+        if device_info.get("sensor_measured_at"):
+            sensor_rows.append(("O'lchov vaqti", str(device_info["sensor_measured_at"])))
+        sensor_rows.extend(
+            [
+                ("Tuproq pH", f"{measurements.get('ph', 0):.2f}"),
+                ("Elektr o'tkazuvchanlik (EC)", f"{measurements.get('ec_ds_m', 0):.2f} dS/m"),
+                ("Namlik", f"{measurements.get('moisture_pct', 0):.1f} %"),
+            ]
+        )
+        if measurements.get("soil_temperature_c") is not None:
+            sensor_rows.append(
+                ("Tuproq harorati", f"{measurements['soil_temperature_c']:.1f} °C")
+            )
+        if fusion is not None:
+            if fusion.nitrogen.value is not None:
+                sensor_rows.append(
+                    (
+                        "Azot indikatori (N) — skrining",
+                        f"{fusion.nitrogen.value:.0f} · {fusion.nitrogen.status_label_uz}",
+                    )
+                )
+            if fusion.phosphorus_comparison.sensor_indicator is not None:
+                sensor_rows.append(
+                    (
+                        "Sensor P indikatori — Olsen-P EMAS",
+                        f"{fusion.phosphorus_comparison.sensor_indicator:.1f} (qiyosiy ko'rsatkich)",
+                    )
+                )
+            if fusion.potassium.value is not None:
+                sensor_rows.append(
+                    (
+                        "Kaliy indikatori (K) — skrining",
+                        f"{fusion.potassium.value:.0f} · {fusion.potassium.status_label_uz}",
+                    )
+                )
+        if not sensor_rows:
+            sensor_rows = [("Holat", "Universal sensor ma'lumoti kiritilmagan.")]
+        story.append(_kv_table(sensor_rows, styles, content_width))
+
+        # --- 3. Ekin va dala ---
+        story.append(Paragraph("3. Ekin va dala ma'lumotlari", styles["h2"]))
+        field_rows = [
+            ("Ekin", recommendation.crop_name_uz),
+            ("Dala maydoni", f"{recommendation.field_area_ha:g} ga"),
+            ("Maqsadli hosildorlik", f"{recommendation.target_yield_t_ha:g} t/ga"),
+        ]
+        if recommendation.growth_stage_label_uz:
+            field_rows.append(("O'sish bosqichi", recommendation.growth_stage_label_uz))
+        if device_info.get("region"):
+            field_rows.append(("Hudud", str(device_info["region"])))
+        if device_info.get("previous_crop"):
+            field_rows.append(("Oldingi ekin", str(device_info["previous_crop"])))
+        story.append(_kv_table(field_rows, styles, content_width))
 
         # --- AI natijasi ---
-        story.append(Paragraph("2. AI tahlili natijasi", styles["h2"]))
+        story.append(Paragraph("4. AI tahlili natijasi (kolorimetrik Olsen-P)", styles["h2"]))
         ai_rows = [
             ("Baholangan Olsen-P", f"{estimate.olsen_p_mg_kg:.2f} mg/kg"),
             ("Noaniqlik (±1σ)", f"±{estimate.uncertainty_mg_kg:.2f} mg/kg"),
@@ -299,7 +359,7 @@ def build_pdf_report(
         story.append(_kv_table(ai_rows, styles, content_width))
 
         # --- Tavsiya ---
-        story.append(Paragraph("3. O'g'itlash tavsiyasi", styles["h2"]))
+        story.append(Paragraph("5. O'g'itlash tavsiyasi", styles["h2"]))
         if recommendation.no_phosphorus_needed:
             rec_rows = [
                 (
@@ -345,22 +405,76 @@ def build_pdf_report(
             )
         story.append(_kv_table(rec_rows, styles, content_width))
 
+        # --- Azot va kaliy: FAQAT sifatiy baho ---
+        if fusion is not None and (
+            fusion.nitrogen.value is not None or fusion.potassium.value is not None
+        ):
+            story.append(
+                Paragraph("5b. Azot va kaliy (sifatiy baho)", styles["h2"])
+            )
+            npk_rows: list[tuple[str, str]] = []
+            for assessment in (fusion.nitrogen, fusion.potassium):
+                if assessment.value is None:
+                    continue
+                npk_rows.append(
+                    (
+                        f"{assessment.label_uz} — {assessment.status_label_uz}",
+                        assessment.advice_uz,
+                    )
+                )
+            npk_rows.append(
+                (
+                    "Muhim cheklov",
+                    "Universal sensorning azot va kaliy qiymatlari SKRINING indikatori "
+                    "hisoblanadi. Mahalliy laboratoriya kalibrlashi mavjud bo'lmagani uchun "
+                    "ular bo'yicha miqdoriy o'g'it me'yori berilmaydi.",
+                )
+            )
+            story.append(_kv_table(npk_rows, styles, content_width))
+
+        # --- Fosfor manbalarini taqqoslash ---
+        if fusion is not None and fusion.phosphorus_comparison.sensor_indicator is not None:
+            story.append(
+                Paragraph("5c. Fosfor manbalarini taqqoslash", styles["h2"])
+            )
+            comparison = fusion.phosphorus_comparison
+            story.append(
+                _kv_table(
+                    [
+                        (
+                            "AgroIQ kolorimetrik Olsen-P (ASOSIY)",
+                            f"{comparison.colorimetric_olsen_p:.1f} mg/kg — tavsiyada shu qiymat ishlatildi",
+                        ),
+                        (
+                            "Universal sensor P indikatori",
+                            f"{comparison.sensor_indicator:.1f} — qiyosiy ko'rsatkich, Olsen-P EMAS",
+                        ),
+                        (
+                            "Xulosa",
+                            comparison.explanation_uz,
+                        ),
+                    ],
+                    styles,
+                    content_width,
+                )
+            )
+
         # --- Ogohlantirishlar ---
         if recommendation.warnings:
-            story.append(Paragraph("4. Agronomik ogohlantirishlar", styles["h2"]))
+            story.append(Paragraph("6. Agronomik ogohlantirishlar", styles["h2"]))
             warning_rows = [
                 (warning.title_uz, warning.message_uz) for warning in recommendation.warnings
             ]
             story.append(_kv_table(warning_rows, styles, content_width))
 
         # --- Tushuntirish ---
-        story.append(Paragraph("5. Nima uchun bu tavsiya berildi?", styles["h2"]))
+        story.append(Paragraph("7. Nima uchun bu tavsiya berildi?", styles["h2"]))
         for index, reason in enumerate(explanations, start=1):
             story.append(Paragraph(f"{index}. {reason}", styles["body"]))
             story.append(Spacer(1, 2))
 
         # --- Hisoblash qadamlari ---
-        story.append(Paragraph("6. Hisoblash qadamlari (agronom uchun)", styles["h2"]))
+        story.append(Paragraph("8. Hisoblash qadamlari (agronom uchun)", styles["h2"]))
         calc_data = [
             [
                 Paragraph("Qadam", styles["cell_bold"]),
@@ -395,6 +509,39 @@ def build_pdf_report(
             )
         )
         story.append(calc_table)
+
+        # --- Ma'lumot manbalari va sifat bayroqlari ---
+        if fusion is not None:
+            story.append(
+                Paragraph("9. Ma'lumot manbalari va ishonchlilik", styles["h2"])
+            )
+            from src.sensor_schemas import DATA_SOURCE_LABELS_UZ, QUALITY_FLAG_LABELS_UZ
+
+            provenance_rows: list[tuple[str, str]] = [
+                (
+                    "Ma'lumot manbalari",
+                    ", ".join(
+                        DATA_SOURCE_LABELS_UZ.get(source, source)
+                        for source in fusion.data_sources
+                    )
+                    or "Ko'rsatilmagan",
+                ),
+                ("Umumiy tavsiya ishonchliligi", fusion.confidence_label_uz),
+            ]
+            if fusion.diagnostic_index:
+                provenance_rows.append(
+                    (
+                        fusion.diagnostic_index["title_uz"],
+                        f"{fusion.diagnostic_index['score']:.0f} / 100 "
+                        f"({fusion.diagnostic_index['label_uz']}) — "
+                        f"{fusion.diagnostic_index['disclaimer_uz']}",
+                    )
+                )
+            for flag in fusion.quality_flags:
+                meta = QUALITY_FLAG_LABELS_UZ.get(flag)
+                if meta:
+                    provenance_rows.append((f"[{flag}] {meta['title']}", meta["message"]))
+            story.append(_kv_table(provenance_rows, styles, content_width))
 
         # --- Ogohlantirish / disclaimer ---
         story.append(Spacer(1, 10))

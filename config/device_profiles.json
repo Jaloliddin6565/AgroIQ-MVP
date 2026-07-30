@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0",
+  "devices": [
+    {
+      "key": "agroiq_analyzer",
+      "name_uz": "AgroIQ portativ fosfor analizatori",
+      "name_en": "AgroIQ Portable Phosphorus Analyzer",
+      "role_uz": "O'simlik o'zlashtira oladigan fosforni (Olsen-P ekvivalenti) kolorimetrik usulda baholaydi.",
+      "measurement_principle_uz": "Molibden-ko'k reaksiyasi; rang intensivligi RGB sensori orqali o'lchanadi.",
+      "default_device_id": "AGROIQ-P-001",
+      "connection_modes": ["demo", "manual", "api"],
+      "transport_uz": "Bluetooth / USB / Qo'lda kiritish / API",
+      "input_fields": [
+        "red", "green", "blue", "reaction_time_sec",
+        "analyzer_temperature_c", "analyzer_device_id", "cartridge_batch_id"
+      ],
+      "output_uz": "Olsen-P ekvivalenti (mg/kg) + noaniqlik",
+      "calibration_status": "demo",
+      "calibration_note_uz": "Sintetik demo ma'lumotda kalibrlangan. Dala uchun mahalliy laboratoriya juftliklari talab qilinadi.",
+      "is_primary_phosphorus_source": true
+    },
+    {
+      "key": "universal_soil_sensor",
+      "name_uz": "Universal tuproq sensori",
+      "name_en": "Universal Multi-parameter Soil Sensor",
+      "role_uz": "Tuproq sharoiti parametrlarini (pH, EC, harorat, namlik) va NPK skrining indikatorlarini o'lchaydi.",
+      "measurement_principle_uz": "Elektrokimyoviy va elektr o'tkazuvchanlik sensorlari; RS485/Modbus RTU protokoli.",
+      "default_device_id": "SOIL-001",
+      "connection_modes": ["demo", "manual", "api", "file"],
+      "transport_uz": "RS485 / Modbus RTU → Edge Gateway → REST API",
+      "input_fields": [
+        "nitrogen_indicator", "phosphorus_indicator", "potassium_indicator",
+        "ph", "ec_ds_m", "soil_temperature_c", "soil_moisture_percent",
+        "sensor_device_id", "measured_at"
+      ],
+      "output_uz": "Tuproq sharoiti o'lchovlari + NPK skrining indikatorlari",
+      "calibration_status": "uncalibrated",
+      "calibration_note_uz": "NPK chiqishlari zavod kalibrlashida. Mahalliy laboratoriya kalibrlashisiz faqat skrining indikatori sifatida ishlatiladi.",
+      "is_primary_phosphorus_source": false
+    }
+  ],
+  "api_defaults": {
+    "timeout_seconds": 5,
+    "max_timeout_seconds": 30,
+    "mock_endpoint": "mock://agroiq-edge-gateway/api/v1/readings/latest",
+    "example_endpoint": "http://192.168.1.50:8000/api/v1/readings/latest",
+    "security_note_uz": "API token faqat sessiya xotirasida saqlanadi. U hech qachon manba kodiga, konfiguratsiyaga yoki GitHub'ga yozilmaydi."
+  },
+  "architecture_uz": {
+    "sensor_chain": [
+      "Universal tuproq sensori",
+      "RS485 / Modbus RTU",
+      "AgroIQ Edge Gateway (lokal)",
+      "REST API (faqat o'qish)",
+      "AgroIQ Streamlit platformasi"
+    ],
+    "analyzer_chain": [
+      "Portativ fosfor analizatori",
+      "Bluetooth / USB / Qo'lda / API",
+      "AgroIQ Streamlit platformasi"
+    ]
+  }
+}

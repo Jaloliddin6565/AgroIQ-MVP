@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0",
+  "status": "PILOT",
+  "notice_uz": "Quyidagi qoidalar pilot qiymatlar bo'lib, dala tajribalari bilan validatsiya qilinishi kerak.",
+
+  "growth_stages": {
+    "paxta": [
+      { "key": "ekish_oldi", "label_uz": "Ekish oldidan", "p_factor": 1.0, "note_uz": "Fosforning asosiy me'yori aynan shu bosqichda beriladi — eng samarali davr." },
+      { "key": "unib_chiqish", "label_uz": "Unib chiqish", "p_factor": 0.85, "note_uz": "Starter me'yor qo'llash mumkin; asosiy me'yor allaqachon berilgan bo'lishi kerak." },
+      { "key": "shonalash", "label_uz": "Shonalash", "p_factor": 0.55, "note_uz": "Fosforni tuproqqa chuqur berish qiyinlashadi; samaradorlik pasayadi." },
+      { "key": "gullash", "label_uz": "Gullash", "p_factor": 0.35, "note_uz": "Kech fosfor qo'llash cheklangan samara beradi; keyingi mavsumga rejalashtirish tavsiya etiladi." },
+      { "key": "pishish", "label_uz": "Pishish", "p_factor": 0.0, "note_uz": "Bu bosqichda fosforli o'g'itlash agronomik jihatdan asoslanmaydi." }
+    ],
+    "bugdoy": [
+      { "key": "ekish_oldi", "label_uz": "Ekish oldidan", "p_factor": 1.0, "note_uz": "Asosiy fosfor me'yori shudgor ostiga beriladi." },
+      { "key": "unib_chiqish", "label_uz": "Unib chiqish", "p_factor": 0.85, "note_uz": "Starter fosfor sovuq tuproqda dastlabki o'sishni qo'llab-quvvatlaydi." },
+      { "key": "tuplanish", "label_uz": "Tuplanish", "p_factor": 0.60, "note_uz": "Tuplanish sifatiga ta'sir qiladi, ammo joylashtirish samaradorligi pasayadi." },
+      { "key": "naycha", "label_uz": "Naychalash", "p_factor": 0.35, "note_uz": "Kech qo'llash cheklangan samara beradi." },
+      { "key": "boshoqlash", "label_uz": "Boshoqlash", "p_factor": 0.0, "note_uz": "Bu bosqichda fosforli o'g'itlash agronomik jihatdan asoslanmaydi." }
+    ]
+  },
+
+  "previous_fertilizer_credit": [
+    { "key": "yoq", "label_uz": "Berilmagan", "p_credit_fraction": 0.0, "note_uz": "Oldingi mavsumda fosforli o'g'it berilmagan." },
+    { "key": "past", "label_uz": "Kam miqdorda (< 60 kg/ga P2O5)", "p_credit_fraction": 0.10, "note_uz": "Tuproqdagi qoldiq fosfor hisobga olindi." },
+    { "key": "ortacha", "label_uz": "O'rtacha (60-120 kg/ga P2O5)", "p_credit_fraction": 0.20, "note_uz": "Oldingi o'g'itlashdan sezilarli qoldiq fosfor kutiladi." },
+    { "key": "yuqori", "label_uz": "Ko'p miqdorda (> 120 kg/ga P2O5)", "p_credit_fraction": 0.30, "note_uz": "Yuqori qoldiq fosfor tufayli me'yor kamaytirildi." },
+    { "key": "nomalum", "label_uz": "Ma'lum emas", "p_credit_fraction": 0.0, "note_uz": "Oldingi o'g'itlash ma'lumoti yo'q — qoldiq fosfor hisobga olinmadi." }
+  ],
+
+  "irrigation_methods": [
+    { "key": "egat", "label_uz": "Egat bo'ylab sug'orish", "note_uz": "Fosforni lokal (tasmali) berish samaraliroq; yuzaga sochish tavsiya etilmaydi." },
+    { "key": "tomchilatib", "label_uz": "Tomchilatib sug'orish", "note_uz": "Suvda eriydigan fosforli o'g'itlarni fertigatsiya orqali berish mumkin." },
+    { "key": "yomgirlatib", "label_uz": "Yomg'irlatib sug'orish", "note_uz": "O'g'itni berishdan keyin tuproqqa aralashtirish tavsiya etiladi." },
+    { "key": "lalmi", "label_uz": "Lalmi (sug'orilmaydigan)", "note_uz": "Namlik cheklangan — o'g'itni namlik yetarli bo'lgan davrda bering." }
+  ],
+
+  "soil_textures": [
+    { "key": "qumoq", "label_uz": "Qumoq", "p_retention": "low", "note_uz": "Yengil tuproqda oziq moddalar yuvilishi mumkin — bo'lib berish tavsiya etiladi." },
+    { "key": "orta_qumoq", "label_uz": "O'rta qumoq", "p_retention": "medium", "note_uz": "Muvozanatli tuproq tuzilishi." },
+    { "key": "ogir_qumoq", "label_uz": "Og'ir qumoq / gilli", "p_retention": "high", "note_uz": "Og'ir tuproqda fosforning bog'lanishi kuchliroq — lokal joylashtirish afzal." },
+    { "key": "nomalum", "label_uz": "Ma'lum emas", "p_retention": "medium", "note_uz": "Tuproq mexanik tarkibi kiritilmagan." }
+  ],
+
+  "diagnostic_index": {
+    "enabled": true,
+    "label_uz": "Dastlabki AgroIQ diagnostika indeksi",
+    "disclaimer_uz": "Bu sertifikatlangan tuproq unumdorligi bahosi EMAS. U faqat kiritilgan o'lchovlarning maqbul oraliqdan chetlanishini umumlashtiruvchi dastlabki ko'rsatkich.",
+    "components": [
+      { "key": "phosphorus", "weight": 0.35, "label_uz": "Fosfor holati" },
+      { "key": "ph", "weight": 0.25, "label_uz": "pH muhiti" },
+      { "key": "ec", "weight": 0.20, "label_uz": "Sho'rlanish (EC)" },
+      { "key": "moisture", "weight": 0.20, "label_uz": "Namlik" }
+    ]
+  },
+
+  "confidence_penalties": {
+    "_rationale_uz": "Ishonchlilik asosan O'LCHOV SIFATI bilan pasaytiriladi. Agronomik sharoit bayroqlari (masalan yuqori pH) jazolanmaydi, chunki ular hisob-kitobda tuzatish koeffitsienti orqali ALLAQACHON hisobga olingan — ular ogohlantirish sifatida ko'rsatiladi, ishonchlilikni pasaytirmaydi. Istisno: EC va namlik oziq moddalar o'zlashtirilishiga tavsiya modeli to'liq qamrab ololmaydigan ta'sir ko'rsatadi.",
+    "COLOR_OUTSIDE_CALIBRATION_RANGE": 2,
+    "SENSOR_DATA_STALE": 1,
+    "TIMESTAMP_IN_FUTURE": 1,
+    "SENSOR_DATA_MISSING": 1,
+    "P_INDICATORS_DISAGREE": 1,
+    "EC_HIGH": 1,
+    "MOISTURE_LOW": 0,
+    "PH_HIGH": 0,
+    "PH_LOW": 0,
+    "DEVICE_ID_MISSING": 0
+  }
+}

@@ -89,6 +89,7 @@ def inject_css() -> None:
         .agro-metric .label {{
             font-size: .78rem; text-transform: uppercase; letter-spacing: .06em;
             color: {MUTED}; font-weight: 600; margin-bottom: .25rem;
+            overflow-wrap: normal; word-break: normal; hyphens: none;
         }}
         .agro-metric .value {{
             font-size: 1.72rem; font-weight: 700; color: {INK}; line-height: 1.15;
@@ -153,6 +154,124 @@ def inject_css() -> None:
             background: {SURFACE}; border: 1px dashed {BORDER}; color: {MUTED};
             border-radius: 12px; padding: .85rem 1rem; font-size: .84rem; line-height: 1.55;
         }}
+
+        /* --- Yuqori gorizontal navigatsiya (v0.2.0) --- */
+        .agro-navwrap {{
+            background: {SURFACE};
+            border: 1px solid {BORDER};
+            border-radius: 14px;
+            padding: .35rem .5rem;
+            margin-bottom: 1.1rem;
+            box-shadow: 0 1px 2px rgba(22,36,26,.05);
+        }}
+        div[data-testid="stElementContainer"]:has(.agro-nav-anchor) + div
+        div[role="radiogroup"] {{
+            display: flex;
+            flex-wrap: wrap;
+            gap: .25rem;
+            background: {SURFACE};
+            border: 1px solid {BORDER};
+            border-radius: 14px;
+            padding: .4rem .5rem;
+            box-shadow: 0 1px 2px rgba(22,36,26,.05);
+        }}
+        div[data-testid="stElementContainer"]:has(.agro-nav-anchor) + div
+        div[role="radiogroup"] > label {{
+            margin: 0 !important;
+            padding: .5rem .95rem;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: background .12s ease, color .12s ease;
+        }}
+        div[data-testid="stElementContainer"]:has(.agro-nav-anchor) + div
+        div[role="radiogroup"] > label:hover {{
+            background: #EEF4EF;
+        }}
+        /* Radio doirachasini yashirish — faqat navigatsiya blokida.
+           Streamlit tuzilishi: label > div > div > [doiracha, matn] */
+        div[data-testid="stElementContainer"]:has(.agro-nav-anchor) + div
+        div[role="radiogroup"] > label[data-testid="stRadioOption"] > div > div > div:first-child {{
+            display: none !important;
+        }}
+        div[data-testid="stElementContainer"]:has(.agro-nav-anchor) + div
+        div[role="radiogroup"] > label p {{
+            font-weight: 600;
+            font-size: .93rem;
+            color: {MUTED};
+            margin: 0;
+            white-space: nowrap;
+        }}
+        /* Tanlangan bo'lim (Streamlit `data-selected` atributidan foydalanamiz) */
+        div[data-testid="stElementContainer"]:has(.agro-nav-anchor) + div
+        div[role="radiogroup"] > label[data-selected="true"] {{
+            background: {PRIMARY};
+            border-color: {PRIMARY};
+        }}
+        div[data-testid="stElementContainer"]:has(.agro-nav-anchor) + div
+        div[role="radiogroup"] > label[data-selected="true"] p {{
+            color: #FFFFFF;
+        }}
+        @media (max-width: 780px) {{
+            div[data-testid="stElementContainer"]:has(.agro-nav-anchor) + div
+            div[role="radiogroup"] > label {{ padding: .45rem .7rem; }}
+            div[data-testid="stElementContainer"]:has(.agro-nav-anchor) + div
+            div[role="radiogroup"] > label p {{ font-size: .85rem; }}
+        }}
+
+        /* --- Qurilma kartalari --- */
+        .agro-device {{
+            background: {SURFACE}; border: 1px solid {BORDER}; border-radius: 16px;
+            padding: 1.15rem 1.3rem; height: 100%;
+        }}
+        .agro-device .dev-head {{
+            display: flex; align-items: flex-start; justify-content: space-between;
+            gap: .8rem; margin-bottom: .7rem;
+        }}
+        .agro-device .dev-name {{ font-size: 1.05rem; font-weight: 700; color: {INK}; }}
+        .agro-device .dev-role {{ font-size: .86rem; color: {MUTED}; margin-top: .2rem; line-height: 1.45; }}
+        .agro-device .dev-row {{
+            display: flex; justify-content: space-between; gap: 1rem;
+            padding: .38rem 0; border-bottom: 1px solid #EDF2EE; font-size: .87rem;
+        }}
+        .agro-device .dev-row:last-child {{ border-bottom: none; }}
+        .agro-device .dev-key {{ color: {MUTED}; }}
+        .agro-device .dev-val {{ font-weight: 650; color: {INK}; text-align: right; }}
+
+        .agro-status {{
+            display: inline-flex; align-items: center; gap: .35rem;
+            padding: .22rem .6rem; border-radius: 999px;
+            font-size: .76rem; font-weight: 700; white-space: nowrap;
+        }}
+        .agro-dot {{ width: 7px; height: 7px; border-radius: 50%; display: inline-block; }}
+
+        /* --- Manba nishonlari (provenance) --- */
+        .agro-src {{
+            display: inline-block; padding: .2rem .58rem; border-radius: 7px;
+            background: #EAF3EB; color: {PRIMARY}; border: 1px solid {BORDER};
+            font-size: .74rem; font-weight: 650; margin: 0 .3rem .3rem 0;
+        }}
+
+        /* --- Arxitektura diagrammasi --- */
+        .agro-arch {{
+            display: flex; flex-wrap: wrap; align-items: center; gap: .4rem;
+            background: {CANVAS}; border: 1px solid {BORDER}; border-radius: 12px;
+            padding: .9rem 1rem;
+        }}
+        .agro-arch .node {{
+            background: {SURFACE}; border: 1px solid {BORDER}; border-radius: 9px;
+            padding: .45rem .7rem; font-size: .82rem; font-weight: 600; color: {INK};
+        }}
+        .agro-arch .node.accent {{ background: {PRIMARY}; color: #fff; border-color: {PRIMARY}; }}
+        .agro-arch .arrow {{ color: {MUTED}; font-weight: 700; }}
+
+        /* --- Bo'lim sarlavhalari --- */
+        .agro-section {{
+            display: flex; align-items: center; gap: .6rem; margin: .2rem 0 .7rem 0;
+        }}
+        .agro-section .bar {{ width: 4px; height: 22px; background: {PRIMARY}; border-radius: 3px; }}
+        .agro-section .txt {{ font-size: 1.06rem; font-weight: 700; color: {INK}; }}
+        .agro-section .hint {{ font-size: .82rem; color: {MUTED}; font-weight: 500; }}
 
         /* --- Streamlit elementlarini moslashtirish --- */
         .stButton > button {{
@@ -503,6 +622,246 @@ def prediction_scatter(actual: pd.Series, predicted: pd.Series) -> go.Figure:
         font={"family": "Inter, Segoe UI, sans-serif", "color": INK},
     )
     return figure
+
+
+# ---------------------------------------------------------------------------
+# v0.2.0 komponentlari
+# ---------------------------------------------------------------------------
+
+
+def top_navigation(pages: list[str], key: str = "nav") -> str:
+    """Yuqori gorizontal navigatsiya paneli.
+
+    Native `st.radio(horizontal=True)` ustiga CSS qo'llanadi — uchinchi tomon
+    kutubxonasi ishlatilmaydi, shuning uchun Streamlit yangilanishlarida barqaror.
+    Tanlangan bo'lim aniq ajratib ko'rsatiladi va tor ekranda qatorlar bo'linadi.
+    """
+
+    st.markdown('<span class="agro-nav-anchor"></span>', unsafe_allow_html=True)
+    return st.radio(
+        "Bo'limlar",
+        pages,
+        key=key,
+        horizontal=True,
+        label_visibility="collapsed",
+    )
+
+
+def section_header(title: str, hint: str = "") -> None:
+    """Bo'lim sarlavhasi (chap tomonda rangli chiziq bilan)."""
+
+    hint_html = f'<span class="hint">{hint}</span>' if hint else ""
+    st.markdown(
+        f'<div class="agro-section"><span class="bar"></span>'
+        f'<span class="txt">{title}</span>{hint_html}</div>',
+        unsafe_allow_html=True,
+    )
+
+
+def status_pill(state: str, label: str) -> str:
+    """Ulanish holati nishoni (HTML matn sifatida qaytaradi)."""
+
+    palette = {
+        "online": ("#E6F4EA", "#1B6E3C", "#27AE60"),
+        "demo": ("#E8F4F6", "#0B5C64", "#0E7C86"),
+        "manual": ("#FFF8E1", "#7A5800", "#E9A21B"),
+        "offline": ("#FDECEA", "#9B2C1F", "#C0392B"),
+    }
+    background, text, dot = palette.get(state, palette["offline"])
+    return (
+        f'<span class="agro-status" style="background:{background};color:{text};">'
+        f'<span class="agro-dot" style="background:{dot};"></span>{label}</span>'
+    )
+
+
+def device_card(
+    name: str,
+    role: str,
+    state: str,
+    state_label: str,
+    rows: list[tuple[str, str]],
+) -> None:
+    """Qurilma holati kartasi."""
+
+    row_html = "".join(
+        f'<div class="dev-row"><span class="dev-key">{key}</span>'
+        f'<span class="dev-val">{value}</span></div>'
+        for key, value in rows
+    )
+    st.markdown(
+        f"""
+        <div class="agro-device">
+            <div class="dev-head">
+                <div>
+                    <div class="dev-name">{name}</div>
+                    <div class="dev-role">{role}</div>
+                </div>
+                {status_pill(state, state_label)}
+            </div>
+            {row_html}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def architecture_row(nodes: list[str], accent_last: bool = True) -> None:
+    """Bir qatorli arxitektura diagrammasi (matn tugunlari va strelkalar)."""
+
+    parts: list[str] = []
+    for index, node in enumerate(nodes):
+        is_last = index == len(nodes) - 1
+        css = "node accent" if (accent_last and is_last) else "node"
+        parts.append(f'<span class="{css}">{node}</span>')
+        if not is_last:
+            parts.append('<span class="arrow">→</span>')
+    st.markdown(f'<div class="agro-arch">{"".join(parts)}</div>', unsafe_allow_html=True)
+
+
+def source_badges(sources: list[str], labels: dict[str, str]) -> None:
+    """Ma'lumot manbalari nishonlari."""
+
+    if not sources:
+        return
+    badges = "".join(
+        f'<span class="agro-src">{labels.get(source, source)}</span>' for source in sources
+    )
+    st.markdown(badges, unsafe_allow_html=True)
+
+
+def soil_condition_chart(interpretations: list[dict[str, Any]]) -> go.Figure:
+    """Tuproq sharoiti — gorizontal holat chiziqlari.
+
+    Har bir parametr o'zining maqbul oralig'iga nisbatan ko'rsatiladi. Bu
+    ilmiy jihatdan asossiz yagona "tuproq salomatligi bali"dan ko'ra halolroq.
+    """
+
+    labels = [item["label_uz"] for item in interpretations][::-1]
+    values = [item["normalized"] for item in interpretations][::-1]
+    colors = [item["color"] for item in interpretations][::-1]
+    texts = [item["display"] for item in interpretations][::-1]
+
+    figure = go.Figure()
+    figure.add_trace(
+        go.Bar(
+            x=[100] * len(labels),
+            y=labels,
+            orientation="h",
+            marker={"color": "#EDF2EE"},
+            hoverinfo="skip",
+            showlegend=False,
+            width=0.55,
+        )
+    )
+    figure.add_trace(
+        go.Bar(
+            x=values,
+            y=labels,
+            orientation="h",
+            marker={"color": colors},
+            text=texts,
+            textposition="outside",
+            cliponaxis=False,
+            hovertemplate="%{y}: %{text}<extra></extra>",
+            showlegend=False,
+            width=0.55,
+        )
+    )
+    figure.update_layout(
+        barmode="overlay",
+        height=52 * len(labels) + 70,
+        margin={"l": 10, "r": 90, "t": 20, "b": 20},
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        xaxis={"range": [0, 100], "showticklabels": False, "showgrid": False, "zeroline": False},
+        yaxis={"showgrid": False, "tickfont": {"size": 12, "color": INK}},
+        font={"family": "Inter, Segoe UI, sans-serif", "color": INK},
+    )
+    return figure
+
+
+def diagnostic_index_gauge(index: dict[str, Any]) -> go.Figure:
+    """Dastlabki diagnostika indeksi ko'rsatkichi (sertifikatlangan baho EMAS)."""
+
+    figure = go.Figure(
+        go.Indicator(
+            mode="gauge+number",
+            value=float(index["score"]),
+            number={"suffix": "", "font": {"size": 34, "color": INK}},
+            gauge={
+                "axis": {"range": [0, 100], "tickwidth": 1, "tickcolor": MUTED},
+                "bar": {"color": index.get("color", PRIMARY), "thickness": 0.7},
+                "bgcolor": "rgba(0,0,0,0)",
+                "borderwidth": 0,
+                "steps": [
+                    {"range": [0, 40], "color": "#FBE4E0"},
+                    {"range": [40, 60], "color": "#FDF0DC"},
+                    {"range": [60, 80], "color": "#EDF6E3"},
+                    {"range": [80, 100], "color": "#E1F2E6"},
+                ],
+            },
+        )
+    )
+    figure.update_layout(
+        height=210,
+        margin={"l": 20, "r": 20, "t": 10, "b": 10},
+        paper_bgcolor="rgba(0,0,0,0)",
+        font={"family": "Inter, Segoe UI, sans-serif", "color": INK},
+    )
+    return figure
+
+
+def phosphorus_comparison_chart(
+    colorimetric: float, sensor_value: float, agrees: bool
+) -> go.Figure:
+    """Ikki fosfor manbasini YONMA-YON ko'rsatadi (birlashtirmasdan)."""
+
+    figure = go.Figure()
+    figure.add_trace(
+        go.Bar(
+            x=["AgroIQ kolorimetrik<br>(Olsen-P, asosiy)", "Universal sensor<br>(P indikatori)"],
+            y=[colorimetric, sensor_value],
+            marker={"color": [PRIMARY, "#9AA69C" if not agrees else ACCENT]},
+            text=[f"{colorimetric:.1f}", f"{sensor_value:.1f}"],
+            textposition="outside",
+            cliponaxis=False,
+            hovertemplate="%{x}<br>%{y:.1f} mg/kg<extra></extra>",
+            width=0.5,
+        )
+    )
+    figure.update_layout(
+        height=290,
+        margin={"l": 10, "r": 10, "t": 30, "b": 10},
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        yaxis={"title": "mg/kg", "gridcolor": BORDER, "rangemode": "tozero"},
+        xaxis={"tickfont": {"size": 11}},
+        showlegend=False,
+        font={"family": "Inter, Segoe UI, sans-serif", "color": INK},
+    )
+    return figure
+
+
+def nutrient_card(assessment: Any) -> None:
+    """Azot yoki kaliy uchun sifatiy baho kartasi."""
+
+    value = assessment.value
+    display = "—" if value is None else f"{value:.0f}"
+    badge = (
+        '<span style="font-size:.7rem;background:#FFF8E1;border:1px solid #EBD08A;'
+        'color:#7A5800;padding:.12rem .45rem;border-radius:6px;font-weight:700;">'
+        "Skrining</span>"
+    )
+    st.markdown(
+        f"""
+        <div class="agro-metric" style="--metric-accent:{assessment.color};">
+            <div class="label">{assessment.label_uz} {badge}</div>
+            <div class="value">{display} <span class="unit">{assessment.unit.split('(')[0].strip()}</span></div>
+            <div class="sub"><b>{assessment.status_label_uz}</b> · laboratoriya tasdig'i tavsiya etiladi</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 def color_swatch(red: float, green: float, blue: float) -> None:

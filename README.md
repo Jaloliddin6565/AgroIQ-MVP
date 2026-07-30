@@ -2,177 +2,282 @@
 
 <img src="assets/agroiq_logo.png" alt="AgroIQ" width="420"/>
 
-### Tuproq diagnostikasi va aniq o'g'itlash uchun aqlli platforma
+### Tuproq diagnostikasi va aniq o'g'itlash uchun integratsiyalashgan AI platformasi
 
-**O'simlik o'zlashtira oladigan fosforni tezkor baholang va dalangiz uchun tushunarli
-o'g'itlash tavsiyasini oling.**
+**Portativ fosfor analizatori, universal tuproq sensori va sun'iy intellekt yordamida
+dalangizning oziqa holatini baholang hamda ekinga mos o'g'itlash tavsiyasini oling.**
 
 [![Python](https://img.shields.io/badge/Python-3.11-3776AB.svg)](https://www.python.org/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.50%2B-FF4B4B.svg)](https://streamlit.io/)
 [![License](https://img.shields.io/badge/License-MIT-1B5E20.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-99%20passed-27AE60.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-240%20passed-27AE60.svg)](tests/)
+[![Version](https://img.shields.io/badge/version-v0.2.0-0E7C86.svg)](#)
 
 </div>
 
 ---
 
-> ⚠️ **Demo model.** Ushbu versiya prototipni namoyish qilish uchun mo'ljallangan va dala
-> sharoitida ishlatishdan oldin real laboratoriya ma'lumotlari bilan kalibrlanishi shart.
+> ⚠️ **Demo model.** Fosfor modeli sintetik ma'lumotlarda o'qitilgan. Universal sensorning
+> azot va kaliy qiymatlari **kalibrlanmagan skrining indikatorlari** hisoblanadi.
 > Batafsil: [MODEL_CARD.md](MODEL_CARD.md).
 
 ---
 
 ## 1. Loyiha haqida
 
-**AgroIQ** — portativ kolorimetrik tuproq diagnostikasi va sun'iy intellektga asoslangan
-o'g'itlash tavsiyalari platformasi. Birinchi MVP o'simlik o'zlashtira oladigan **fosforga
-(Olsen-P)** qaratilgan.
+**AgroIQ** — ikkita mustaqil o'lchov manbaini birlashtiruvchi tuproq intellekti platformasi:
 
-Asosiy ish oqimi:
+| Manba | Nima o'lchaydi | Roli |
+|---|---|---|
+| **AgroIQ portativ fosfor analizatori** | Kolorimetrik (molibden-ko'k) reaksiya → Olsen-P ekvivalenti | Fosfor uchun **ASOSIY** manba |
+| **Universal tuproq sensori** | pH, EC, harorat, namlik + N/P/K indikatorlari | Kontekst + **skrining** |
+
+### Ish oqimi
 
 ```
-Kolorimetrik o'lchov
-   → AI fosforni baholash (+ noaniqlik)
-      → Tuproq holatini tahlil qilish
-         → Ekinga moslashtirilgan o'g'itlash tavsiyasi
-            → Tushuntiriladigan fermer hisoboti (PDF)
+AgroIQ kolorimetrik fosfor o'lchovi
+        +
+Universal sensor o'lchovlari
+        +
+Ekin va dala ma'lumotlari
+        ↓
+Ma'lumot validatsiyasi va ishonchlilikni baholash
+        ↓
+AI yordamidagi tuproq holati tahlili
+        ↓
+Ekinga xos o'g'itlash tavsiyasi
+        ↓
+Fermerga tushunarli tushuntirish va PDF hisobot
 ```
 
 ### Muammo
 
-Fermerlarda dala darajasida o'simlik o'zlashtira oladigan fosforni **tez va arzon**
-o'lchash imkoniyati deyarli yo'q. Laboratoriya tahlili qimmat, uzoq davom etadi va ko'pincha
-mavsumiy qarorlar uchun kech keladi. Natijada o'g'it me'yori taxminan belgilanadi — bu
-ikki tomonlama yo'qotishga olib keladi: keraksiz xarajat yoki hosildorlikning pasayishi.
+Fermerlar o'g'itlash bo'yicha qarorlarni ko'pincha umumiy tavsiyalar asosida, dala
+darajasidagi tezkor ma'lumotsiz qabul qiladi. Laboratoriya tahlili qimmat, sekin yoki
+uzoq bo'lishi mumkin. Umumiy tuproq sensorlari esa o'simlik o'zlashtira oladigan
+fosforni ishonchli o'lchay olmaydi.
 
 ### Yechim
 
-Portativ kolorimetrik o'lchov qurilmasi + AI kalibrlash modeli + shaffof agronomik
-tavsiya dvigateli. Har bir tavsiya **sababi, ishonch darajasi va cheklovlari** bilan
-birga taqdim etiladi.
-
-### Maqsadli foydalanuvchilar
-
-Fermerlar · agroklasterlar · agronomlar · sayyor tuproq tahlili xizmatlari ·
-agrolaboratoriyalar · o'g'it distribyutorlari · agrokonsalting tashkilotlari.
-
-Interfeys tili — **o'zbek (lotin)**, ilmiy jargonsiz, fermerga tushunarli.
+AgroIQ maxsus kolorimetrik fosfor analizatorini, ko'p parametrli tuproq sensori
+ma'lumotlarini va tushuntiriladigan tavsiya dvigatelini birlashtiradi.
 
 ---
 
-## 2. AI arxitekturasi
+## 2. ⚠️ Asosiy ilmiy qoida
 
-Loyihaning eng muhim ilmiy tamoyili — **AI va agronomik qoidalarni qat'iy ajratish**:
+Platforma sensor chiqishlarini **hech qachon** laboratoriya o'lchovlariga teng deb
+qaramaydi. To'rt daraja aniq ajratilgan:
+
+| # | Qiymat | Maqomi | Ishlatilishi |
+|---|---|---|---|
+| 1 | **Kolorimetrik Olsen-P** | AI bahosi (mg/kg) | Miqdoriy fosfor tavsiyasi — **asosiy manba** |
+| 2 | **Sensor P indikatori** | Empirik indikator | Faqat **moslik tekshiruvi** |
+| 3 | **pH, EC, namlik, harorat** | To'g'ridan-to'g'ri o'lchov | Tuproq sharoiti talqini |
+| 4 | **N va K indikatorlari** | Skrining | Faqat **sifatiy** baho |
+
+**Qat'iy taqiqlar:**
+
+- ❌ Sensor P qiymati Olsen-P o'rniga **hech qachon** qo'yilmaydi.
+- ❌ Ikki fosfor qiymati **hech qachon o'rtachalanmaydi**.
+- ❌ N va K uchun kalibrlashsiz **miqdoriy me'yor berilmaydi**.
+
+Ikki fosfor qiymati sezilarli farq qilsa, `P_INDICATORS_DISAGREE` bayrog'i qo'yiladi va
+foydalanuvchiga ko'rsatiladi:
+
+> «Fosfor bo'yicha qurilmalar o'rtasida tafovut aniqlandi. AgroIQ kolorimetrik natijasi
+> tavsiyada asosiy qiymat sifatida ishlatildi. Laboratoriya tasdig'i tavsiya etiladi.»
+
+Kelajakda N/K uchun miqdoriy tavsiya `config/nutrient_calibration.json` faylidagi
+`quantitative_enabled` bayrog'i orqali — **faqat validatsiyalangan kalibrlash
+parametrlari kiritilgandan keyin** — yoqilishi mumkin.
+
+---
+
+## 3. AI arxitekturasi
 
 ```
-┌───────────────────────────────────────────────────────────────┐
-│  1-BOSQICH — AI (mashinali o'qitish)                          │
-│                                                               │
-│  Kirish : R, G, B, reaksiya vaqti, harorat                    │
-│           → 23 ta optik xususiyat (absorbsiya, HSV, indekslar)│
-│  Chiqish: Olsen-P (mg/kg) + noaniqlik + ishonch darajasi      │
-│                                                               │
-│  ❌ pH, EC, namlik, ekin, hosildorlik BU YERDA ISHLATILMAYDI  │
-└───────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│  1-YO'NALISH — FOSFOR (miqdoriy)                                 │
+│  R, G, B, reaksiya vaqti, harorat → 23 optik xususiyat           │
+│  → Olsen-P (mg/kg) + noaniqlik + ishonch darajasi                │
+│  ❌ pH, EC, namlik BU YERDA ISHLATILMAYDI                        │
+└──────────────────────────────────────────────────────────────────┘
+                              +
+┌──────────────────────────────────────────────────────────────────┐
+│  2-YO'NALISH — TUPROQ SHAROITI (kontekst)                        │
+│  Universal sensor → pH/EC/namlik/harorat sinflari                │
+│                   → N va K sifatiy skrining bahosi               │
+└──────────────────────────────────────────────────────────────────┘
                               ↓
-┌───────────────────────────────────────────────────────────────┐
-│  2-BOSQICH — Shaffof agronomik qoidalar (qora quti EMAS)      │
-│                                                               │
-│  Kirish : baholangan Olsen-P, fosfor sinfi, ekin, hosildorlik,│
-│           pH, EC, namlik, o'g'it tarkibi, JSON konfiguratsiya │
-│  Chiqish: o'g'it turi, me'yor oralig'i, muddat, usul,         │
-│           ogohlantirishlar, tushuntirish                      │
-│                                                               │
-│  Har bir raqam 6 qadamli oshkora hisob-kitobda ko'rsatiladi   │
-└───────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│  TUSHUNTIRILADIGAN BIRLASHTIRISH (src/data_fusion.py)            │
+│  1. Vaqt belgilari va oraliqlarni tekshirish                     │
+│  2. Yetishmayotgan/ziddiyatli kirishlarni aniqlash               │
+│  3. Olsen-P baholash                                             │
+│  4. pH/EC/namlik/harorat sinflash                                │
+│  5. N va K ni konservativ talqin qilish                          │
+│  6. Sensor P ↔ Olsen-P moslik tekshiruvi (o'rtachalashsiz)       │
+│  7. Sifat bayroqlari                                             │
+│  8. Umumiy ishonchlilik                                          │
+└──────────────────────────────────────────────────────────────────┘
+                              ↓
+┌──────────────────────────────────────────────────────────────────┐
+│  SHAFFOF AGRONOMIK QOIDALAR (qora quti EMAS)                     │
+│  Oshkora hisob-kitob qadamlari + JSON konfiguratsiya             │
+└──────────────────────────────────────────────────────────────────┘
 ```
-
-**Nima uchun bu muhim:** pH, EC va namlik fosforning *o'zlashtirilishiga* ta'sir qiladi,
-lekin ular tuproqdagi fosfor *konsentratsiyasini* aniqlamaydi. Ularni prediktor sifatida
-ishlatish ilmiy jihatdan noto'g'ri bo'lar edi.
 
 ### O'g'it me'yorining formulasi
 
 ```
-kerakli_P2O5 (kg/ga) = maqsadli_hosil (t/ga)
-                       × P2O5_olib_chiqish (kg/t)      ← ekin profilidan
-                       × fosfor_holati_koeffitsienti    ← tuproq tahlilidan
-                       × pH_tuzatish_koeffitsienti      ← tuproq muhitidan
+kerakli_P2O5 = maqsadli_hosil × P2O5_olib_chiqish
+               × fosfor_holati_koeffitsienti
+               × pH_tuzatish_koeffitsienti
+               × o'sish_bosqichi_koeffitsienti      (v0.2.0)
+               × (1 − oldingi_o'g'itlash_krediti)   (v0.2.0)
 
-o'g'it_mahsuloti (kg/ga) = kerakli_P2O5 / mahsulotdagi_P2O5_ulushi
+o'g'it_mahsuloti = kerakli_P2O5 / mahsulotdagi_P2O5_ulushi
 ```
 
-Barcha koeffitsientlar `config/*.json` fayllarida — agronom kodga tegmasdan sozlashi mumkin.
+Har bir koeffitsient `config/*.json` da — agronom kodga tegmasdan sozlaydi.
 
 ---
 
-## 3. Ekran ko'rinishlari
+## 4. Universal Soil Sensor Integration
 
-Skrinshotlar `assets/screenshots/` katalogida saqlanadi.
+### Nima uchun gateway kerak?
 
-| Sahifa | Fayl | Nima ko'rsatiladi |
+Streamlit Community Cloud'da ishlayotgan ilova foydalanuvchining kompyuteridagi
+**RS485 portiga to'g'ridan-to'g'ri ula olmaydi**. Shu sababli:
+
+```
+Universal sensor → RS485/Modbus RTU → AgroIQ Edge Gateway → REST API → AgroIQ platformasi
+```
+
+Ilova faqat HTTP orqali gaplashadi. **Apparat ixtiyoriy** — demo, qo'lda va fayl
+rejimlari har doim ishlaydi.
+
+### Qo'llab-quvvatlanadigan rejimlar
+
+| Rejim | Apparat kerakmi | Tavsif |
 |---|---|---|
-| Bosh sahifa | `01_home.png` | Qiymat taklifi, muammo/yechim, 4 qadamli ish oqimi |
-| Yangi tahlil | `02_analysis.png` | Demo namuna va qo'lda kiritish shakli |
-| Natijalar | `03_results.png` | Olsen-P, fosfor shkalasi, o'g'it me'yori, tushuntirish |
-| Yuqori fosfor ssenariysi | `04_results_high.png` | "Qo'shimcha fosfor tavsiya etilmaydi" holati |
-| Model va validatsiya | `05_model.png` | Metrikalar, model taqqoslash, kalibrlash oralig'i |
-| Demo rejimi | `06_demo.png` | Uchta tayyor ssenariy |
-| Loyiha haqida | `07_about.png` | Biznes modeli va yo'l xaritasi |
+| **Demo ssenariy** | ❌ | To'rtta tayyorlangan ssenariy |
+| **Qo'lda kiritish** | ❌ | Barcha qiymatlar shakl orqali |
+| **Mock API** (`mock://`) | ❌ | Soxta gateway, tarmoqsiz |
+| **Gateway API** | ✅ | Haqiqiy sensor lokal gateway orqali |
+| **JSON / CSV yuklash** | ❌ | Eksport qilingan o'lchovlar |
+
+### Lokal gateway'ni ishga tushirish
+
+```bash
+pip install -r edge_gateway/requirements-edge.txt
+
+# Apparatsiz (namoyish uchun):
+python -m edge_gateway.gateway --mode mock --port 8000
+
+# Haqiqiy Modbus sensori bilan:
+python -m edge_gateway.gateway --mode modbus --serial-port /dev/ttyUSB0 --baudrate 4800
+
+# Serversiz bitta o'lchovni ko'rish:
+python -m edge_gateway.gateway --print-once
+```
+
+So'ngra AgroIQ ilovasida **Qurilmalar → API** bo'limiga o'ting va manzilni kiriting:
+`http://<gateway-ip>:8000/api/v1/readings/latest`
+
+Batafsil: [`edge_gateway/README.md`](edge_gateway/README.md)
+
+### API javob formati
+
+```json
+{
+  "device_id": "SOIL-001",
+  "timestamp": "2026-07-30T10:00:00+05:00",
+  "source": "modbus_gateway",
+  "nitrogen_indicator": 42.0,
+  "phosphorus_indicator": 18.0,
+  "potassium_indicator": 165.0,
+  "ph": 7.8,
+  "ec_ds_m": 1.9,
+  "soil_temperature_c": 29.4,
+  "soil_moisture_percent": 21.7,
+  "quality_flags": []
+}
+```
+
+> 🔒 **Xavfsizlik:** API token faqat sessiya xotirasida saqlanadi. U manba kodiga,
+> konfiguratsiyaga yoki GitHub'ga **hech qachon** yozilmaydi. Gateway MVP da
+> **faqat o'qish** rejimida ishlaydi — sensorga yozish qo'llab-quvvatlanmaydi.
 
 ---
 
-## 4. Repozitoriya tuzilishi
+## 5. Ekran ko'rinishlari
+
+Skrinshotlar `assets/screenshots/` katalogida.
+
+| Sahifa | Fayl |
+|---|---|
+| Bosh sahifa | `01_home.png` |
+| Demo rejimi (4 ssenariy) | `02_demo.png` |
+| Natijalar — past fosfor | `03_results_low.png` |
+| **Qurilmalar tafovuti** | `04_results_disagreement.png` |
+| Natijalar — yuqori fosfor | `05_results_high.png` |
+| Qurilmalar sahifasi | `06_devices.png` |
+| Gateway API rejimi | `07_devices_api.png` · `08_devices_api_data.png` |
+| Yangi tahlil (4 bo'lim) | `09_analysis.png` |
+| Fayl yuklash rejimi | `11_analysis_upload.png` |
+| Model va validatsiya | `12_model.png` |
+| Loyiha haqida | `13_about.png` |
+| Mobil ko'rinish | `14_mobile.png` |
+
+---
+
+## 6. Repozitoriya tuzilishi
 
 ```
 AgroIQ/
-├── app.py                        # Streamlit ilovasi (6 ta bo'lim)
-├── requirements.txt
-├── README.md · DEPLOY.md · MODEL_CARD.md · LICENSE · .gitignore
-├── conftest.py                   # pytest sozlamalari va fikstura'lar
+├── app.py                          # Streamlit ilovasi (7 bo'lim, yuqori navigatsiya)
+├── requirements.txt                # Apparat bog'liqliklarisiz
+├── README.md · DEPLOY.md · MODEL_CARD.md · LICENSE
 │
-├── .streamlit/config.toml        # Rang mavzusi
-│
-├── assets/
-│   ├── agroiq_logo.png           # Yo'q bo'lsa — matnli logotipga o'tadi
-│   └── screenshots/
-│
-├── config/                       # ⚙️ Agronom sozlaydigan qismlar
-│   ├── crop_profiles.json         #   ekin me'yorlari, pH tuzatish, sharoit chegaralari
-│   ├── phosphorus_thresholds.json #   fosfor sinflari (Juda past … Yuqori)
-│   └── fertilizer_products.json   #   o'g'it tarkibi (P2O5 ulushi)
-│
-├── data/
-│   ├── soil_samples.csv          # O'quv dataseti (demo: SYNTHETIC_DEMO markeri bilan)
-│   └── demo_samples.csv          # Uchta namoyish ssenariysi
-│
-├── models/
-│   └── phosphorus_model.joblib   # O'qitilgan pipeline + metrikalar + kalibrlash
+├── config/                         # ⚙️ Agronom sozlaydigan qismlar
+│   ├── crop_profiles.json           #   ekin me'yorlari, pH tuzatish
+│   ├── phosphorus_thresholds.json   #   fosfor sinflari
+│   ├── fertilizer_products.json     #   o'g'it tarkibi
+│   ├── sensor_thresholds.json       #   🆕 sensor talqin chegaralari
+│   ├── device_profiles.json         #   🆕 qurilma profillari
+│   ├── nutrient_calibration.json    #   🆕 N/K kalibrlash bayroqlari
+│   └── recommendation_rules.json    #   🆕 bosqich, kredit, indeks
 │
 ├── src/
-│   ├── data_validation.py        # pydantic validatsiya + konfiguratsiya yuklash
-│   ├── feature_engineering.py    # 23 ta optik xususiyat
-│   ├── model_training.py         # sintetik generator + model taqqoslash
-│   ├── model_inference.py        # bashorat + noaniqlik + ishonch
-│   ├── recommendation_engine.py  # shaffof agronomik qoidalar
-│   ├── explanations.py           # "Nima uchun bu tavsiya berildi?"
-│   ├── report_generator.py       # PDF hisobot (reportlab)
-│   └── ui_components.py          # CSS, kartalar, Plotly grafiklar
+│   ├── sensor_schemas.py           # 🆕 sensor/analizator sxemalari, bayroqlar
+│   ├── device_integration.py       # 🆕 demo/API/fayl rejimlari, mock gateway
+│   ├── data_fusion.py              # 🆕 tushuntiriladigan birlashtirish
+│   ├── soil_interpretation.py      # 🆕 pH/EC/namlik/N/K talqini
+│   ├── demo_scenarios.py           # 🆕 4 ta ssenariy
+│   ├── model_training.py           # kolorimetrik model (o'zgarmagan)
+│   ├── model_inference.py          # bashorat + noaniqlik (o'zgarmagan)
+│   ├── recommendation_engine.py    # kengaytirilgan agronomik qoidalar
+│   ├── report_generator.py         # PDF (ikkala qurilma ma'lumoti bilan)
+│   ├── explanations.py · feature_engineering.py · data_validation.py
+│   └── ui_components.py            # CSS, yuqori navigatsiya, grafiklar
 │
-├── scripts/
-│   └── train_model.py            # Modelni o'qitish CLI
+├── edge_gateway/                   # 🆕 LOKAL gateway (bulutga joylashtirilmaydi)
+│   ├── gateway.py · modbus_reader.py · mock_sensor.py · schemas.py
+│   ├── config.example.json · requirements-edge.txt · README.md
 │
-└── tests/
-    ├── test_validation.py
-    ├── test_inference.py
-    └── test_recommendations.py
+├── data/ · models/ · scripts/ · assets/
+└── tests/                          # 240 ta test
+    ├── test_validation.py · test_inference.py · test_recommendations.py
+    ├── test_sensors.py             # 🆕 sensor, API, fayl, kalibrlash bayroqlari
+    ├── test_fusion.py              # 🆕 birlashtirish, tafovut, ssenariylar
+    └── test_integration.py         # 🆕 navigatsiya, PDF, bulut mosligi
 ```
 
 ---
 
-## 5. Lokal o'rnatish
-
-### 5.1. Virtual muhit yaratish
+## 7. Lokal o'rnatish
 
 ```bash
 python -m venv .venv
@@ -185,144 +290,129 @@ Windows uchun:
 .venv\Scripts\activate
 ```
 
-### 5.2. Kutubxonalarni o'rnatish
+Keyin:
 
 ```bash
 pip install -r requirements.txt
-```
-
-### 5.3. Modelni o'qitish
-
-```bash
 python scripts/train_model.py
-```
-
-Bu buyruq:
-- `data/soil_samples.csv` ni tekshiradi (kamida 30 ta yaroqli qator kerak);
-- real ma'lumot bo'lmasa — takrorlanuvchi sintetik dataset yaratadi (seed = 42) va uni
-  `data_source = SYNTHETIC_DEMO` markeri bilan belgilaydi;
-- uchta modelni taqqoslaydi va eng yaxshisini tanlaydi;
-- `models/phosphorus_model.joblib` faylini saqlaydi;
-- `data/demo_samples.csv` ni yangilaydi.
-
-### 5.4. Ilovani ishga tushirish
-
-```bash
 streamlit run app.py
 ```
 
-Brauzerda: <http://localhost:8501>
-
-### 5.5. Testlarni ishga tushirish
+Testlar:
 
 ```bash
 pytest
 ```
 
----
-
-## 6. Real ma'lumot bilan ishlash
-
-Demo rejimdan chiqish uchun `data/soil_samples.csv` faylini real ma'lumot bilan
-almashtiring:
-
-| Ustun | Turi | Izoh |
-|---|---|---|
-| `sample_id` | matn | Namuna identifikatori |
-| `field_id` | matn | **Muhim** — guruhlangan bo'linish uchun |
-| `red`, `green`, `blue` | son | 0–255 |
-| `reaction_time_sec` | son | Reaksiya vaqti, sekund |
-| `sample_temperature_c` | son | Namuna harorati, °C |
-| `lab_olsen_p_mg_kg` | son | **Maqsad** — laboratoriya Olsen-P, mg/kg |
-| `region`, `soil_type`, `measurement_date` | ixtiyoriy | Metama'lumot |
-
-`data_source` ustunini olib tashlang (yoki `SYNTHETIC_DEMO` dan boshqa qiymat qo'ying),
-so'ng `python scripts/train_model.py` ni qayta ishga tushiring. Demo bannerlar avtomatik
-o'chadi.
-
-### Agronomik sozlash
-
-Kodni o'zgartirmasdan quyidagilarni sozlash mumkin:
-
-- `config/phosphorus_thresholds.json` — fosfor sinflari chegaralari;
-- `config/crop_profiles.json` — ekin me'yorlari, pH tuzatish, tuproq sharoiti chegaralari;
-- `config/fertilizer_products.json` — o'g'it tarkibi va indikativ narxlar.
+Brauzerda: <http://localhost:8501>
 
 ---
 
-## 7. Demo ma'lumot haqida ogohlantirish
+## 8. Real ma'lumot bilan ishlash
 
-> Joriy model **sintetik (sun'iy yaratilgan)** ma'lumotlar asosida o'qitilgan. Bu ma'lumot
-> real dala tajribasi natijasi **emas**. U Beer-Lambert qonuni va reaksiya kinetikasi
-> asosida fizik modellashtirilgan bo'lsa-da, real tuproq namunalarida validatsiya
-> qilinmagan.
->
-> Ilova ichida demo holati bir necha joyda ochiq ko'rsatiladi: yon panelda, natijalar
-> sahifasida va "Model va validatsiya" sahifasida.
->
-> Loyiha hech qachon sintetik ma'lumotni real eksperimental ma'lumot sifatida taqdim etmaydi.
+### Fosfor modelini qayta kalibrlash
+
+`data/soil_samples.csv` faylini real ma'lumot bilan almashtiring:
+
+| Ustun | Izoh |
+|---|---|
+| `sample_id`, `field_id` | `field_id` guruhlangan bo'linish uchun **muhim** |
+| `red`, `green`, `blue` | 0–255 |
+| `reaction_time_sec`, `sample_temperature_c` | O'lchov sharoiti |
+| `lab_olsen_p_mg_kg` | **Maqsad** — laboratoriya Olsen-P |
+
+`data_source` ustunini olib tashlang, so'ng `python scripts/train_model.py` ni qayta
+ishga tushiring.
+
+### N va K uchun miqdoriy tavsiyani yoqish
+
+`config/nutrient_calibration.json` da har bir oziq modda uchun talablar ro'yxati bor.
+Ular bajarilgandan keyin:
+
+```json
+"nitrogen": {
+  "quantitative_enabled": true,
+  "calibration": { "validated": true, "slope": 0.85, "intercept": 2.1, "r2": 0.78 }
+}
+```
+
+Shundan keyingina platforma azot bo'yicha miqdoriy me'yor bera boshlaydi.
 
 ---
 
-## 8. Biznes modeli
+## 9. Biznes modeli
 
 | Yo'nalish | Tavsif |
 |---|---|
-| 📦 Qurilma savdosi | Portativ AgroIQ o'qish qurilmasi |
-| 🧪 Test kartrijlari | Takroriy sotiladigan reagent kartrijlari (barqaror daromad) |
-| 🚐 Xizmat sifatida tahlil | Sayyor tuproq tahlili (har bir test uchun to'lov) |
-| ☁️ Platforma obunasi | AI tahlil platformasiga yillik obuna |
-| 🏢 B2B xizmatlar | Agroklasterlar uchun integratsiya va ma'lumot xizmatlari |
+| AgroIQ o'qish qurilmasi savdosi | Portativ kolorimetrik analizator |
+| Universal sensor to'plami | Sensor sotuvi yoki integratsiya |
+| Fosfor kartrijlari | Takroriy daromad manbai |
+| Xizmat sifatida tahlil | Sayyor tuproq tahlili |
+| AI platforma obunasi | Yillik obuna |
+| B2B klaster paneli | Ko'p dalali boshqaruv paneli |
+| Kalibrlash va texnik xizmat | Davriy kalibrlash |
+| Agronomik API xizmatlari | Uchinchi tomon integratsiyasi |
 
 ---
 
-## 9. Yo'l xaritasi
+## 10. Yo'l xaritasi
 
 | Bosqich | Modul | Holat |
 |---|---|---|
-| MVP | Fosfor (Olsen-P) + o'g'itlash tavsiyasi | ✅ Ushbu repozitoriya |
-| 1-bosqich | Real kalibrlash dataseti (150–300 juftlik) | 🔜 Keyingi qadam |
-| 2-bosqich | Kaliy (K₂O) moduli | 📋 Rejalashtirilgan |
-| 2-bosqich | Nitrat azot (NO₃-N) moduli | 📋 Rejalashtirilgan |
-| 3-bosqich | Sug'orish suvi tahlili | 📋 Rejalashtirilgan |
-| 3-bosqich | Dron va sun'iy yo'ldosh integratsiyasi | 📋 Rejalashtirilgan |
-| 4-bosqich | O'zgaruvchan me'yorli o'g'itlash xaritalari | 📋 Rejalashtirilgan |
-| 4-bosqich | Oflayn mobil ilova | 📋 Rejalashtirilgan |
+| v0.1.0 | Fosfor + o'g'itlash tavsiyasi | ✅ |
+| **v0.2.0** | **Universal sensor, gateway, birlashtirish qatlami** | ✅ **Joriy** |
+| v0.3.0 | Real kalibrlash dataseti (150–300 juftlik) | 🔜 |
+| v0.4.0 | Validatsiyalangan N va K kartrijlari | 📋 |
+| — | Sug'orish suvi diagnostikasi | 📋 |
+| — | Mobil ilova (oflayn) | 📋 |
+| — | Dron va sun'iy yo'ldosh integratsiyasi | 📋 |
+| — | O'zgaruvchan me'yorli o'g'itlash xaritalari | 📋 |
+| — | Markaziy Osiyo kalibrlash datasetlari | 📋 |
 
 ---
 
-## 10. Jamoa
+## 11. Jamoa
 
 | Rol | Ism | Mas'uliyat |
 |---|---|---|
-| Loyiha rahbari | *[Ism Familiya]* | Mahsulot strategiyasi, biznes rivojlantirish |
-| AI / ML muhandisi | *[Ism Familiya]* | Model, kalibrlash, ma'lumotlar tahlili |
+| Loyiha rahbari | *[Ism Familiya]* | Mahsulot strategiyasi, biznes |
+| AI / ML muhandisi | *[Ism Familiya]* | Model, kalibrlash, ma'lumotlar |
 | Agronom-maslahatchi | *[Ism Familiya]* | Agronomik qoidalar, dala validatsiyasi |
-| Apparat muhandisi | *[Ism Familiya]* | Optik o'qish qurilmasi |
+| Apparat muhandisi | *[Ism Familiya]* | Analizator optikasi, sensor integratsiyasi |
 
 Aloqa: *[email]* · *[telefon]*
 
 ---
 
-## 11. Deployment
+## 12. Deployment
 
-Streamlit Community Cloud'ga joylashtirish bo'yicha to'liq qo'llanma:
-[**DEPLOY.md**](DEPLOY.md)
+To'liq qo'llanma: [**DEPLOY.md**](DEPLOY.md)
 
-Qisqacha: repozitoriyani GitHub'ga yuklang → <https://share.streamlit.io> → asosiy fayl
-sifatida `app.py` ni ko'rsating. Hech qanday pullik API, tashqi LLM yoki maxfiy kalit
-talab qilinmaydi.
+Qisqacha: GitHub → <https://share.streamlit.io> → asosiy fayl `app.py`, Python 3.11.
+Pullik API, tashqi LLM yoki maxfiy kalit talab qilinmaydi.
+
+> **Joylashtirilgan MVP havolasi:** *(deploy qilingandan keyin shu yerga qo'shiladi)*
 
 ---
 
-## 12. Muhim ogohlantirish
+## 13. Ochiq cheklovlar
 
-> **AgroIQ MVP natijalari dastlabki tavsiya hisoblanadi. Qurilma va algoritm real hududiy
-> tuproq namunalari hamda dala tajribalari bilan to'liq validatsiya qilingunga qadar
-> yakuniy o'g'itlash qarori malakali agronom bilan kelishilishi kerak.**
+Bu cheklovlar ilovada ham yashirilmaydi:
 
-AgroIQ sertifikatlangan laboratoriya uskunasi emas va akkreditatsiyalangan tuproq
-tahlilining o'rnini bosmaydi.
+1. **Fosfor modeli sintetik ma'lumotda o'qitilgan** — real qurilma-laboratoriya
+   juftliklari bilan kalibrlash talab qilinadi.
+2. **N va K sertifikatlangan o'lchov emas** — ular skrining indikatori sifatida
+   qaraladi va miqdoriy me'yor uchun ishlatilmaydi.
+3. **Dala validatsiyasi yakunlanmagan** — o'g'itlash me'yorlari hosildorlik bo'yicha
+   tajribalar bilan tasdiqlanmagan.
+4. **Sensor registr xaritasi qurilmaga bog'liq** — Modbus manzillari ishlab
+   chiqaruvchiga qarab farq qiladi.
+5. **Laboratoriya o'rnini bosmaydi** — rasmiy agrokimyoviy xulosa uchun
+   sertifikatlangan tahlil zarur.
+
+> **AgroIQ MVP natijalari dastlabki tavsiya hisoblanadi. Qurilma va algoritm real
+> hududiy tuproq namunalari hamda dala tajribalari bilan to'liq validatsiya qilingunga
+> qadar yakuniy o'g'itlash qarori malakali agronom bilan kelishilishi kerak.**
 
 ---
 
