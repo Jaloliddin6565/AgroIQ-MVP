@@ -1,4 +1,4 @@
-# DEPLOY — AgroIQ v0.2.0 ni joylashtirish qo'llanmasi
+# DEPLOY — AgroIQ v0.2.1 ni joylashtirish qo'llanmasi
 
 Ushbu hujjat AgroIQ MVP ni **Streamlit Community Cloud**'ga bepul joylashtirish tartibini
 tavsiflaydi. Muqobil variantlar (lokal tarmoq, Docker) ham keltirilgan.
@@ -294,3 +294,11 @@ Brauzerda tekshiring:
 - [ ] N va K uchun faqat sifatiy baho ko'rsatiladi;
 - [ ] PDF hisobotda ikkala qurilma ma'lumoti bor;
 - [ ] Mobil ekranda gorizontal siljish yo'q.
+
+### 8.6. v0.2.1 — interfeys tekshiruvi
+
+- [ ] Yon panelda faqat logotip va brend matni bor (holat/versiya bloklari yo'q);
+- [ ] Yuqorida demo ogohlantirishi chizig'i ko'rinadi;
+- [ ] Sahifa pastida versiya footeri (v0.2.1) bor;
+- [ ] Fosfor grafigida yozuvlar bir-birining ustiga tushmaydi;
+- [ ] «AI tahlilini boshlash» tugmasi to'q yashil fonda oq matn bilan aniq ko'rinadi.
