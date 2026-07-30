@@ -918,6 +918,14 @@ def page_results(configs: dict[str, Any], model_info: dict[str, Any] | None) -> 
                 soil_condition_chart(rows), width="stretch",
                 config={"displayModeBar": False},
             )
+            # Ustun uzunligi qiymatning O'ZI emas, uning maqbul oraliqqa
+            # mosligini bildiradi — bir xil holatdagi parametrlar bir xil
+            # uzunlikda ko'rinadi. Bu ataylab shunday.
+            st.caption(
+                "Ustun uzunligi — parametrning maqbul oraliqqa mosligi "
+                "(yashil = maqbul, sariq = e'tibor talab qiladi, qizil = chetlangan). "
+                "Aniq o'lchov qiymati ustun yonida ko'rsatilgan."
+            )
         else:
             st.info("Tuproq sharoiti o'lchovlari kiritilmagan.")
     with diagnostic_columns[1]:

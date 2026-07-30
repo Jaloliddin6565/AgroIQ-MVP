@@ -344,11 +344,23 @@ def inject_css() -> None:
 
         /* --- Bo'lim sarlavhalari --- */
         .agro-section {{
-            display: flex; align-items: center; gap: .6rem; margin: .2rem 0 .7rem 0;
+            display: flex; align-items: center; flex-wrap: wrap;
+            gap: .25rem .6rem; margin: .2rem 0 .7rem 0;
         }}
-        .agro-section .bar {{ width: 4px; height: 22px; background: {PRIMARY}; border-radius: 3px; }}
+        .agro-section .bar {{
+            width: 4px; height: 22px; background: {PRIMARY};
+            border-radius: 3px; flex-shrink: 0;
+        }}
         .agro-section .txt {{ font-size: 1.06rem; font-weight: 700; color: {INK}; }}
         .agro-section .hint {{ font-size: .82rem; color: {MUTED}; font-weight: 500; }}
+        @media (max-width: 640px) {{
+            /* Tor ekranda izoh sarlavha yoniga emas, ostiga tushadi */
+            .agro-section {{ align-items: flex-start; }}
+            .agro-section .txt {{ font-size: 1rem; }}
+            .agro-section .hint {{
+                flex-basis: 100%; margin-left: .85rem; line-height: 1.4;
+            }}
+        }}
 
         /* --- Streamlit elementlarini moslashtirish --- */
         .stButton > button {{
