@@ -1,4 +1,4 @@
-# DEPLOY — AgroIQ ni joylashtirish qo'llanmasi
+# DEPLOY — AgroIQ v0.2.0 ni joylashtirish qo'llanmasi
 
 Ushbu hujjat AgroIQ MVP ni **Streamlit Community Cloud**'ga bepul joylashtirish tartibini
 tavsiflaydi. Muqobil variantlar (lokal tarmoq, Docker) ham keltirilgan.
@@ -15,7 +15,10 @@ Joylashtirishdan oldin quyidagilarni tekshiring:
 - [ ] `config/*.json` fayllari to'g'ri JSON formatida;
 - [ ] `.streamlit/secrets.toml` **repozitoriyada YO'Q** (`.gitignore` da);
 - [ ] kodda hech qanday API kalit, parol yoki maxfiy ma'lumot yo'q;
-- [ ] `requirements.txt` barcha kutubxonalarni o'z ichiga oladi.
+- [ ] `requirements.txt` barcha kutubxonalarni o'z ichiga oladi;
+- [ ] `requirements.txt` da apparat paketlari (`pymodbus`, `pyserial`) **YO'Q**;
+- [ ] `edge_gateway/requirements-edge.txt` alohida saqlangan;
+- [ ] `edge_gateway/config.json` commit qilinmagan (`.gitignore` da).
 
 > **Muhim:** `models/phosphorus_model.joblib` fayli repozitoriyaga **commit qilingan
 > bo'lishi kerak**. Streamlit Community Cloud faqat `pip install -r requirements.txt` ni
@@ -216,3 +219,78 @@ Brauzerda tekshiring:
 - [ ] "PDF hisobotni yuklab olish" fayl yuklaydi;
 - [ ] "Model va validatsiya" sahifasida R², RMSE, MAE ko'rinadi;
 - [ ] Mobil ekran o'lchamida ham interfeys o'qilishi mumkin.
+
+---
+
+## 8. v0.2.0 — Ko'p sensorli arxitektura va bulut xavfsizligi
+
+### 8.1. Nima uchun bulut deploy'i barqaror qoladi
+
+Universal sensor qo'shilishi bulut joylashtirishni **murakkablashtirmaydi**, chunki
+apparat bilan aloqa ilovadan tashqariga chiqarilgan:
+
+```
+Sensor → RS485/Modbus → LOKAL Edge Gateway → REST API → Streamlit Cloud
+         └──────────── bulutdan tashqarida ────────────┘
+```
+
+Asosiy `requirements.txt` da `pymodbus`, `pyserial` yoki boshqa apparat kutubxonalari
+**yo'q**. Bu avtomatik test bilan himoyalangan
+(`tests/test_integration.py::test_main_requirements_have_no_hardware_dependencies`).
+
+### 8.2. Apparatsiz ishlaydigan rejimlar
+
+Joylashtirilgan ilova quyidagi rejimlarda **har doim** ishlaydi:
+
+| Rejim | Apparat | Namoyish uchun |
+|---|---|---|
+| Demo ssenariy (4 ta) | ❌ | ✅ Tavsiya etiladi |
+| Qo'lda kiritish | ❌ | ✅ |
+| Mock API (`mock://`) | ❌ | ✅ Gateway integratsiyasini ko'rsatadi |
+| JSON / CSV yuklash | ❌ | ✅ |
+| Haqiqiy gateway API | ✅ | Faqat lokal tarmoqda |
+
+> **Muhim:** Streamlit Community Cloud'dagi ilova foydalanuvchining uy tarmog'idagi
+> gateway'ga ulana **olmaydi** (u internetdan ko'rinmaydi). Haqiqiy apparat bilan
+> namoyish uchun ilovani lokal ishga tushiring yoki gateway'ni ochiq manzilga
+> chiqaring (VPN/teskari proksi bilan himoyalab).
+
+### 8.3. API tokeni va maxfiylik
+
+- Token faqat `st.session_state` da saqlanadi — sahifa yopilganda yo'qoladi.
+- Hech qanday token faylga, konfiguratsiyaga yoki repozitoriyaga yozilmaydi.
+- `.streamlit/secrets.toml` `.gitignore` da — u talab qilinmaydi.
+- `edge_gateway/config.json` ham `.gitignore` da.
+
+### 8.4. Lokal gateway'ni ishga tushirish (namoyish uchun)
+
+Bulutdagi ilova bilan bir tarmoqda emas, shuning uchun apparatli namoyish uchun
+ilovani ham lokal ishga tushiring:
+
+```bash
+# 1-terminal — gateway
+pip install -r edge_gateway/requirements-edge.txt
+python -m edge_gateway.gateway --mode mock --port 8000
+
+# 2-terminal — ilova
+streamlit run app.py
+```
+
+So'ngra ilovada **Qurilmalar → API** bo'limida
+`http://localhost:8000/api/v1/readings/latest` manzilini kiriting.
+
+### 8.5. Namoyishdan oldingi yakuniy tekshiruv (v0.2.0)
+
+Brauzerda tekshiring:
+
+- [ ] Yuqori gorizontal navigatsiya ishlaydi, tanlangan bo'lim ajralib turadi;
+- [ ] Yon panelda takroriy navigatsiya **yo'q**;
+- [ ] To'rtta demo ssenariy ham turli natija beradi;
+- [ ] 4-ssenariy qurilmalar tafovutini va kolorimetrik natijaning ustunligini ko'rsatadi;
+- [ ] Qurilmalar sahifasida ikkala qurilma va arxitektura diagrammasi ko'rinadi;
+- [ ] Mock API ulanish testi muvaffaqiyatli o'tadi;
+- [ ] JSON/CSV yuklash ishlaydi;
+- [ ] Sensor P kartasi «Bu Olsen-P EMAS» deb belgilangan;
+- [ ] N va K uchun faqat sifatiy baho ko'rsatiladi;
+- [ ] PDF hisobotda ikkala qurilma ma'lumoti bor;
+- [ ] Mobil ekranda gorizontal siljish yo'q.

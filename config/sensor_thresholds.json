@@ -1,0 +1,105 @@
+{
+  "schema_version": "1.0",
+  "status": "PILOT",
+  "notice_uz": "Sensor chegaralari pilot qiymatlar. Mahalliy tuproq sharoiti uchun agrokimyo mutaxassisi tomonidan sozlanishi kerak.",
+  "notice_en": "Pilot sensor interpretation bands. Must be adjusted for local soil conditions before field use.",
+
+  "ph": {
+    "unit": "pH",
+    "valid_min": 3.0,
+    "valid_max": 10.0,
+    "bands": [
+      { "key": "strongly_acidic", "max": 5.5, "label_uz": "Kuchli kislotali", "level": "attention", "color": "#C0392B" },
+      { "key": "acidic", "max": 6.5, "label_uz": "Kislotali", "level": "caution", "color": "#E67E22" },
+      { "key": "optimal", "max": 7.5, "label_uz": "Maqbul", "level": "ok", "color": "#27AE60" },
+      { "key": "alkaline", "max": 8.3, "label_uz": "Ishqoriy", "level": "caution", "color": "#E67E22" },
+      { "key": "strongly_alkaline", "max": 14.0, "label_uz": "Kuchli ishqoriy", "level": "attention", "color": "#C0392B" }
+    ]
+  },
+
+  "ec_ds_m": {
+    "unit": "dS/m",
+    "valid_min": 0.0,
+    "valid_max": 30.0,
+    "bands": [
+      { "key": "very_low", "max": 0.4, "label_uz": "Juda past", "level": "caution", "color": "#E67E22" },
+      { "key": "normal", "max": 4.0, "label_uz": "Normal", "level": "ok", "color": "#27AE60" },
+      { "key": "moderate", "max": 8.0, "label_uz": "O'rtacha sho'rlangan", "level": "caution", "color": "#E67E22" },
+      { "key": "high", "max": 100.0, "label_uz": "Kuchli sho'rlangan", "level": "attention", "color": "#C0392B" }
+    ]
+  },
+
+  "soil_moisture_percent": {
+    "unit": "%",
+    "valid_min": 0.0,
+    "valid_max": 100.0,
+    "bands": [
+      { "key": "very_low", "max": 12.0, "label_uz": "Juda quruq", "level": "attention", "color": "#C0392B" },
+      { "key": "low", "max": 18.0, "label_uz": "Quruq", "level": "caution", "color": "#E67E22" },
+      { "key": "optimal", "max": 32.0, "label_uz": "Maqbul", "level": "ok", "color": "#27AE60" },
+      { "key": "high", "max": 40.0, "label_uz": "Nam", "level": "caution", "color": "#E67E22" },
+      { "key": "saturated", "max": 100.0, "label_uz": "Haddan tashqari nam", "level": "attention", "color": "#1F6FB2" }
+    ]
+  },
+
+  "soil_temperature_c": {
+    "unit": "°C",
+    "valid_min": -20.0,
+    "valid_max": 70.0,
+    "bands": [
+      { "key": "cold", "max": 10.0, "label_uz": "Sovuq", "level": "caution", "color": "#1F6FB2" },
+      { "key": "cool", "max": 15.0, "label_uz": "Salqin", "level": "ok", "color": "#5DADE2" },
+      { "key": "optimal", "max": 30.0, "label_uz": "Maqbul", "level": "ok", "color": "#27AE60" },
+      { "key": "warm", "max": 35.0, "label_uz": "Issiq", "level": "caution", "color": "#E67E22" },
+      { "key": "hot", "max": 100.0, "label_uz": "Juda issiq", "level": "attention", "color": "#C0392B" }
+    ]
+  },
+
+  "nitrogen_indicator": {
+    "unit": "mg/kg (sensor indikatori)",
+    "valid_min": 0.0,
+    "valid_max": 2000.0,
+    "screening_only": true,
+    "bands": [
+      { "key": "likely_low", "max": 40.0, "label_uz": "Ehtimol past", "level": "caution", "color": "#E67E22" },
+      { "key": "acceptable", "max": 90.0, "label_uz": "Qoniqarli", "level": "ok", "color": "#27AE60" },
+      { "key": "likely_high", "max": 5000.0, "label_uz": "Ehtimol yuqori", "level": "caution", "color": "#1F6FB2" }
+    ]
+  },
+
+  "phosphorus_indicator": {
+    "unit": "mg/kg (sensor indikatori)",
+    "valid_min": 0.0,
+    "valid_max": 2000.0,
+    "screening_only": true,
+    "bands": [
+      { "key": "likely_low", "max": 15.0, "label_uz": "Ehtimol past", "level": "caution", "color": "#E67E22" },
+      { "key": "acceptable", "max": 40.0, "label_uz": "Qoniqarli", "level": "ok", "color": "#27AE60" },
+      { "key": "likely_high", "max": 5000.0, "label_uz": "Ehtimol yuqori", "level": "caution", "color": "#1F6FB2" }
+    ]
+  },
+
+  "potassium_indicator": {
+    "unit": "mg/kg (sensor indikatori)",
+    "valid_min": 0.0,
+    "valid_max": 5000.0,
+    "screening_only": true,
+    "bands": [
+      { "key": "likely_low", "max": 120.0, "label_uz": "Ehtimol past", "level": "caution", "color": "#E67E22" },
+      { "key": "acceptable", "max": 250.0, "label_uz": "Qoniqarli", "level": "ok", "color": "#27AE60" },
+      { "key": "likely_high", "max": 10000.0, "label_uz": "Ehtimol yuqori", "level": "caution", "color": "#1F6FB2" }
+    ]
+  },
+
+  "data_freshness": {
+    "stale_after_hours": 24,
+    "future_tolerance_minutes": 10,
+    "note_uz": "24 soatdan eski o'lchov eskirgan deb belgilanadi va ishonchlilik pasaytiriladi."
+  },
+
+  "phosphorus_agreement": {
+    "relative_tolerance": 0.60,
+    "absolute_tolerance_mg_kg": 6.0,
+    "note_uz": "Sensor P indikatori va kolorimetrik Olsen-P farqi shu chegaradan oshsa, tafovut bayrog'i qo'yiladi. Qiymatlar HECH QACHON o'rtachalanmaydi."
+  }
+}

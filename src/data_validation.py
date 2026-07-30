@@ -272,12 +272,99 @@ def load_fertilizer_products(config_dir: str | None = None) -> dict[str, Any]:
     return payload
 
 
+@lru_cache(maxsize=1)
+def load_sensor_thresholds(config_dir: str | None = None) -> dict[str, Any]:
+    """Universal sensor talqin chegaralarini yuklaydi (v0.2.0)."""
+
+    base = Path(config_dir) if config_dir else CONFIG_DIR
+    payload = _read_json(base / "sensor_thresholds.json")
+    _require_keys(
+        payload,
+        ["ph", "ec_ds_m", "soil_moisture_percent", "data_freshness", "phosphorus_agreement"],
+        "sensor_thresholds.json",
+    )
+    for parameter in ("ph", "ec_ds_m", "soil_moisture_percent"):
+        bands = payload[parameter].get("bands")
+        if not isinstance(bands, list) or not bands:
+            raise ConfigError(
+                f"'sensor_thresholds.json': '{parameter}' uchun 'bands' bo'sh bo'lmagan ro'yxat bo'lishi kerak."
+            )
+        for band in bands:
+            _require_keys(band, ["key", "max", "label_uz"], "sensor_thresholds.json")
+    return payload
+
+
+@lru_cache(maxsize=1)
+def load_device_profiles(config_dir: str | None = None) -> dict[str, Any]:
+    """Qurilma profillarini yuklaydi (v0.2.0)."""
+
+    base = Path(config_dir) if config_dir else CONFIG_DIR
+    payload = _read_json(base / "device_profiles.json")
+    _require_keys(payload, ["devices"], "device_profiles.json")
+    if not isinstance(payload["devices"], list) or not payload["devices"]:
+        raise ConfigError("'device_profiles.json': 'devices' bo'sh bo'lmagan ro'yxat bo'lishi kerak.")
+    for device in payload["devices"]:
+        _require_keys(device, ["key", "name_uz", "connection_modes"], "device_profiles.json")
+    return payload
+
+
+@lru_cache(maxsize=1)
+def load_nutrient_calibration(config_dir: str | None = None) -> dict[str, Any]:
+    """N/K kalibrlash holatini yuklaydi (v0.2.0).
+
+    Bu fayl azot va kaliy uchun MIQDORIY tavsiya berilishini boshqaradi.
+    Standart holatda ikkalasi ham o'chirilgan.
+    """
+
+    base = Path(config_dir) if config_dir else CONFIG_DIR
+    payload = _read_json(base / "nutrient_calibration.json")
+    _require_keys(payload, ["phosphorus", "nitrogen", "potassium"], "nutrient_calibration.json")
+    for nutrient in ("nitrogen", "potassium", "phosphorus"):
+        if "quantitative_enabled" not in payload[nutrient]:
+            raise ConfigError(
+                f"'nutrient_calibration.json': '{nutrient}' uchun 'quantitative_enabled' bayrog'i yo'q."
+            )
+    return payload
+
+
+@lru_cache(maxsize=1)
+def load_recommendation_rules(config_dir: str | None = None) -> dict[str, Any]:
+    """Tavsiya qoidalarini yuklaydi (o'sish bosqichi, oldingi o'g'itlash va h.k.)."""
+
+    base = Path(config_dir) if config_dir else CONFIG_DIR
+    payload = _read_json(base / "recommendation_rules.json")
+    _require_keys(
+        payload,
+        ["growth_stages", "previous_fertilizer_credit", "diagnostic_index"],
+        "recommendation_rules.json",
+    )
+    return payload
+
+
+def is_quantitative_enabled(nutrient: str, calibration: dict[str, Any] | None = None) -> bool:
+    """Oziq modda uchun miqdoriy tavsiya yoqilganini tekshiradi.
+
+    Azot va kaliy uchun bu standart holatda False — validatsiyalangan kalibrlash
+    parametrlari kiritilmaguncha faqat sifatiy baho beriladi.
+    """
+
+    calibration = calibration or load_nutrient_calibration()
+    entry = calibration.get(nutrient)
+    if not isinstance(entry, dict):
+        return False
+    return bool(entry.get("quantitative_enabled", False))
+
+
 def clear_config_cache() -> None:
     """Konfiguratsiya keshini tozalaydi (testlar va qayta yuklash uchun)."""
 
     load_thresholds.cache_clear()
     load_crop_profiles.cache_clear()
     load_fertilizer_products.cache_clear()
+    load_sensor_thresholds.cache_clear()
+    load_device_profiles.cache_clear()
+    load_nutrient_calibration.cache_clear()
+    load_recommendation_rules.cache_clear()
 
 
 def get_crop(crop_key: str, profiles: dict[str, Any] | None = None) -> dict[str, Any]:

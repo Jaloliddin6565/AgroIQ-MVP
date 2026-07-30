@@ -1,0 +1,13 @@
+# AgroIQ Edge Gateway — LOKAL bog'liqliklar.
+# DIQQAT: bu fayl asosiy `requirements.txt` ga QO'SHILMAYDI. Streamlit Community
+# Cloud faqat asosiy ro'yxatni o'rnatadi, shuning uchun bulut deploy'i apparat
+# kutubxonalariga bog'liq bo'lib qolmaydi.
+
+fastapi>=0.110
+uvicorn>=0.27
+pydantic>=2.6
+
+# Modbus RTU uchun (IXTIYORIY — faqat haqiqiy sensor bilan ishlaganda kerak).
+# Mock rejimi bularsiz ham to'liq ishlaydi.
+pymodbus>=3.6
+pyserial>=3.5

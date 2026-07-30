@@ -1,7 +1,7 @@
 # Model Card — AgroIQ fosforni baholash modeli
 
 **Model nomi:** AgroIQ Olsen-P colorimetric estimator
-**Versiya:** 0.1.0 (MVP / pilot)
+**Versiya:** 0.2.0 (MVP / pilot — ko'p sensorli)
 **Sana:** 2026
 **Holat:** ⚠️ **Demo model** — sintetik ma'lumotlarda o'qitilgan, dala sharoitida ishlatishdan
 oldin real laboratoriya ma'lumotlari bilan kalibrlanishi shart.
@@ -264,3 +264,92 @@ Modelni dala sharoitida ishlatishdan oldin quyidagilar bajarilishi kerak:
 > AgroIQ MVP natijalari dastlabki tavsiya hisoblanadi. Qurilma va algoritm real hududiy
 > tuproq namunalari hamda dala tajribalari bilan to'liq validatsiya qilingunga qadar
 > yakuniy o'g'itlash qarori malakali agronom bilan kelishilishi kerak.
+
+---
+
+## 13. v0.2.0 — Ko'p sensorli arxitektura va oziq moddalar maqomi
+
+v0.2.0 da platformaga universal ko'p parametrli tuproq sensori qo'shildi. **Fosfor
+modeli o'zgartirilmadi va qayta o'qitilmadi** — u avvalgidek faqat optik
+xususiyatlardan foydalanadi.
+
+### Har bir qiymatning analitik maqomi
+
+| Qiymat | Manba | Maqomi | Miqdoriy tavsiyada ishlatiladimi |
+|---|---|---|---|
+| **Olsen-P (mg/kg)** | AgroIQ kolorimetrik analizatori | AI bahosi | ✅ **Ha — asosiy manba** |
+| **Sensor P indikatori** | Universal sensor | Empirik indikator | ❌ Yo'q — faqat moslik tekshiruvi |
+| **pH, EC, namlik, harorat** | Universal sensor | To'g'ridan-to'g'ri o'lchov | ✅ Sharoit tuzatishi sifatida |
+| **Azot indikatori (N)** | Universal sensor | Kalibrlanmagan skrining | ❌ Yo'q — faqat sifatiy |
+| **Kaliy indikatori (K)** | Universal sensor | Kalibrlanmagan skrining | ❌ Yo'q — faqat sifatiy |
+
+### Nima uchun sensor P Olsen-P ni almashtira olmaydi
+
+Arzon NPK sensorlari odatda tuproq eritmasining elektr xossalarini o'lchaydi va
+ishlab chiqaruvchining empirik formulasi orqali "fosfor" qiymatini chiqaradi. Bu
+qiymat:
+
+- standartlashtirilgan kimyoviy ekstraksiyaga (Olsen, Bray, Machigin) asoslanmaydi;
+- tuproq namligi, harorati va sho'rlanishiga kuchli bog'liq;
+- karbonatli tuproqlarda ayniqsa ishonchsiz;
+- o'simlik o'zlashtira oladigan fosfor bilan izchil korrelyatsiyaga ega emas.
+
+Shu sababli platforma bu ikki qiymatni **hech qachon o'rtachalamaydi**. Ular farq
+qilsa, `P_INDICATORS_DISAGREE` bayrog'i qo'yiladi va kolorimetrik natija asosiy
+bo'lib qoladi.
+
+### Moslik tekshiruvi mezoni
+
+Tafovut faqat **ikkala shart** bajarilganda belgilanadi (bu past
+konsentratsiyalarda soxta ogohlantirishlarning oldini oladi):
+
+```
+nisbiy_farq > 0.60   VA   absolyut_farq > 6.0 mg/kg
+```
+
+Chegaralar: `config/sensor_thresholds.json` → `phosphorus_agreement`.
+
+### N va K uchun kalibrlash talablari
+
+Miqdoriy azot/kaliy tavsiyalari `config/nutrient_calibration.json` da
+`quantitative_enabled: false` bilan **o'chirilgan**. Ularni yoqish uchun:
+
+1. Kamida **150 juft** sensor–laboratoriya namunasi;
+2. Kamida **3 hudud** va turli tuproq tiplaridan;
+3. Mustaqil test to'plamida **R² ≥ 0.70**;
+4. Akkreditatsiyalangan laboratoriya usuli (nitrat azot / almashinuvchi K₂O);
+5. Mahalliy agrokimyo mutaxassisi tasdig'i.
+
+Ushbu shartlar bajarilmaguncha platforma faqat sifatiy baho beradi:
+*ehtimol past · qoniqarli · ehtimol yuqori* — har birida laboratoriya tasdig'i tavsiyasi bilan.
+
+### Ishonchlilikni hisoblash (v0.2.0)
+
+Umumiy tavsiya ishonchliligi model ishonchidan boshlanadi va sifat bayroqlari
+bo'yicha konservativ pasaytiriladi. **Muhim loyihaviy qaror:** agronomik sharoit
+bayroqlari (masalan `PH_HIGH`) ishonchlilikni pasaytirmaydi, chunki ular hisob-kitobda
+tuzatish koeffitsienti orqali **allaqachon hisobga olingan**. Ishonchlilik faqat
+o'lchov sifati bilan bog'liq muammolar uchun pasaytiriladi:
+
+| Bayroq | Jazo | Sabab |
+|---|---|---|
+| `COLOR_OUTSIDE_CALIBRATION_RANGE` | −2 | Model validatsiya qilinmagan hududda |
+| `SENSOR_DATA_STALE` | −1 | Tuproq holati o'zgargan bo'lishi mumkin |
+| `P_INDICATORS_DISAGREE` | −1 | Qurilmalar bir-birini tasdiqlamaydi |
+| `EC_HIGH` | −1 | Sho'rlanish oziq o'zlashtirishga tavsiya modeli qamramagan ta'sir qiladi |
+| `SENSOR_DATA_MISSING` | −1 | Kontekst to'liq emas |
+| `PH_HIGH`, `MOISTURE_LOW`, `DEVICE_ID_MISSING` | 0 | Hisobga olingan yoki o'lchov aniqligiga ta'sir qilmaydi |
+
+### Dastlabki AgroIQ diagnostika indeksi
+
+Natijalar sahifasidagi 0–100 ko'rsatkich **sertifikatlangan tuproq unumdorligi bahosi
+EMAS**. U faqat kiritilgan o'lchovlarning maqbul oraliqdan chetlanishini umumlashtiradi.
+Mavjud bo'lmagan parametrlar indeksga qo'shilmaydi va og'irliklar qayta
+normallashtiriladi. Ilovada har doim ushbu ogohlantirish bilan birga ko'rsatiladi.
+
+### v0.2.0 da nima o'zgarmadi
+
+- Fosfor modeli pipeline'i, xususiyatlari va o'qitish jarayoni;
+- Model tanlash mantiqi va metrikalari;
+- Noaniqlikni baholash usuli;
+- Fosfor sinflari chegaralari.
