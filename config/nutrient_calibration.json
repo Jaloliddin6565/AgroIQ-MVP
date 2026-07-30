@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0",
+  "status": "UNCALIBRATED",
+  "notice_uz": "Azot va kaliy uchun miqdoriy tavsiya BERILMAYDI. Universal sensorning N va K qiymatlari laboratoriya kalibrlashisiz faqat dastlabki (skrining) indikator hisoblanadi.",
+  "notice_en": "Quantitative N and K recommendations are DISABLED. Universal sensor N/K outputs are screening indicators only until local laboratory calibration exists.",
+  "phosphorus": {
+    "quantitative_enabled": true,
+    "primary_source": "colorimetric_olsen_p",
+    "source_note_uz": "Miqdoriy fosfor tavsiyasi faqat AgroIQ kolorimetrik Olsen-P bahosidan hisoblanadi. Universal sensor P indikatori hech qachon uning o'rnini bosmaydi.",
+    "calibration": {
+      "validated": false,
+      "dataset": "synthetic_demo",
+      "validated_at": null,
+      "n_paired_samples": 0
+    }
+  },
+  "nitrogen": {
+    "quantitative_enabled": false,
+    "requires_lab_confirmation": true,
+    "enable_requirements_uz": [
+      "Kamida 150 juft sensor-laboratoriya namunasi",
+      "Kamida 3 ta hududdan va turli tuproq tiplaridan",
+      "Mustaqil test to'plamida R² >= 0.70",
+      "Mahalliy agrokimyo mutaxassisi tasdig'i"
+    ],
+    "calibration": {
+      "validated": false,
+      "slope": null,
+      "intercept": null,
+      "r2": null,
+      "n_paired_samples": 0,
+      "lab_method": null
+    },
+    "qualitative_advice_uz": {
+      "likely_low": "Azot bilan ta'minlanish past bo'lishi mumkin. Aniq me'yor uchun laboratoriya tahlili (nitrat azot) tavsiya etiladi.",
+      "acceptable": "Azot ko'rsatkichi qoniqarli oraliqda. Bu skrining bahosi bo'lgani uchun yakuniy me'yorni belgilashda laboratoriya tahlili (nitrat azot) bilan tasdiqlash tavsiya etiladi.",
+      "likely_high": "Azot ko'rsatkichi yuqori bo'lishi mumkin. Ortiqcha azot berishdan saqlaning va laboratoriya tahlili bilan tekshiring."
+    }
+  },
+  "potassium": {
+    "quantitative_enabled": false,
+    "requires_lab_confirmation": true,
+    "enable_requirements_uz": [
+      "Kamida 150 juft sensor-laboratoriya namunasi",
+      "Almashinuvchi kaliy (K2O) bo'yicha akkreditatsiyalangan tahlil",
+      "Mustaqil test to'plamida R² >= 0.70",
+      "Mahalliy agrokimyo mutaxassisi tasdig'i"
+    ],
+    "calibration": {
+      "validated": false,
+      "slope": null,
+      "intercept": null,
+      "r2": null,
+      "n_paired_samples": 0,
+      "lab_method": null
+    },
+    "qualitative_advice_uz": {
+      "likely_low": "Kaliy bilan ta'minlanish past bo'lishi mumkin. Almashinuvchi kaliy bo'yicha laboratoriya tahlili tavsiya etiladi.",
+      "acceptable": "Kaliy ko'rsatkichi qoniqarli oraliqda. Bu skrining bahosi bo'lgani uchun yakuniy qarorni almashinuvchi kaliy bo'yicha laboratoriya tahlili bilan tasdiqlash tavsiya etiladi.",
+      "likely_high": "Kaliy ko'rsatkichi yuqori bo'lishi mumkin. Qo'shimcha kaliyli o'g'it asoslanmasligi mumkin."
+    }
+  }
+}

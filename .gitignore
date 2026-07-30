@@ -33,3 +33,6 @@ Thumbs.db
 # Vaqtinchalik natijalar
 *.log
 tmp/
+
+# Edge gateway lokal sozlamalari (maxfiy bo\lishi mumkin)
+edge_gateway/config.json
